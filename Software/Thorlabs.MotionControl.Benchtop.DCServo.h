@@ -35,7 +35,7 @@
 
 extern "C"
 {
-	/// \cond NOT_MASTER
+/// \cond NOT_MASTER
 
 	/// <summary> Values that represent FT_Status. </summary>
 	typedef enum FT_Status : short
@@ -176,7 +176,7 @@ extern "C"
 		Forwards = 0x01,///< Only rotate in a forward direction
 		Reverse = 0x02,///< Only rotate in a backward direction
 	} MOT_MovementDirections;
-	/// \endcond
+/// \endcond
 
 	/// <summary> Information about the device generated from serial number. </summary>
 	#pragma pack(1)
@@ -396,7 +396,8 @@ extern "C"
 		int proportionalGain;
 		/// <summary> The PID Integral Gain. </summary>
 		int integralGain;
-		/// <summary> The PID Differential Gain. </summary>
+		/// <summary> The PID Derivative Gain. </summary>
+		/// <remarks> Kept as differentialGain rather than derivativeGain for backward compatibility</remarks>
 		int differentialGain;
 		/// <summary> The PID Integral Limit. </summary>
 		int integralLimit;
@@ -405,7 +406,7 @@ extern "C"
 		/// 		 <list type=table>
 		///				<item><term>Bit 1 (0x01)</term><term>When set, enable Proportional Gain component.</term></item>
 		///				<item><term>Bit 2 (0x02)</term><term>When set, enable Integral Gain component.</term></item>
-		///				<item><term>Bit 3 (0x04)</term><term>When set, enable Differential Gain component.</term></item>
+		///				<item><term>Bit 3 (0x04)</term><term>When set, enable Derivative Gain component.</term></item>
 		///				<item><term>Bit 4 (0x08)</term><term>When set, enable Integral Limit component.</term></item>
 		/// 		  </list> </remarks>
 		WORD parameterFilter;
@@ -540,6 +541,19 @@ extern "C"
 	/// <seealso cref="TLI_GetDeviceListByTypeExt(char *receiveBuffer, DWORD sizeOfBuffer, int typeID)" />
 	/// <seealso cref="TLI_GetDeviceListByTypesExt(char *receiveBuffer, DWORD sizeOfBuffer, int * typeIDs, int length)" />
 	BENCHTOPDCSERVO_API short __cdecl TLI_GetDeviceInfo(char const * serialNo, TLI_DeviceInfo *info);
+
+	/// <summary> Initialize a connection to the Simulation Manager, which must already be running. </summary>
+	/// <remarks> Call TLI_InitializeSimulations before TLI_BuildDeviceList at the start of the program to make a connection to the simulation manager.<Br />
+	/// 		  Any devices configured in the simulation manager will become visible TLI_BuildDeviceList is called and can be accessed using TLI_GetDeviceList.<Br />
+	/// 		  Call TLI_InitializeSimulations at the end of the program to release the simulator.  </remarks>
+	/// <seealso cref="TLI_UninitializeSimulations()" />
+	/// <seealso cref="TLI_BuildDeviceList()" />
+	/// <seealso cref="TLI_GetDeviceList(SAFEARRAY** stringsReceiver)" />
+	BENCHTOPDCSERVO_API void __cdecl TLI_InitializeSimulations();
+
+	/// <summary> Uninitialize a connection to the Simulation Manager, which must already be running. </summary>
+	/// <seealso cref="TLI_InitializeSimulations()" />
+	BENCHTOPDCSERVO_API void __cdecl TLI_UninitializeSimulations();
 
 	/// <summary> Open the device for communications. </summary>
 	/// <param name="serialNo">	The serial no of the controller to be connected. </param>
@@ -736,8 +750,9 @@ extern "C"
 	/// <returns> <c>true</c> if the device can home. </returns>
 	BENCHTOPDCSERVO_API bool __cdecl BDC_CanHome(char const * serialNo, short channel);
 
+	/// \deprecated
 	/// <summary> Does the device need to be Homed before a move can be performed. </summary>
-	/// <remarks> @deprecated superceded by <see cref="BDC_CanMoveWithoutHomingFirst(char const * serialNo, short channel)"/> </remarks>
+	/// <remarks> superceded by <see cref="BDC_CanMoveWithoutHomingFirst(char const * serialNo, short channel)"/> </remarks>
 	/// <param name="serialNo"> The controller serial no. </param>
 	/// <param name="channel">  The channel (1 to n). </param>
 	/// <returns> <c>true</c> if the device needs homing. </returns>
@@ -1076,6 +1091,7 @@ extern "C"
 	/// <param name="serialNo">	The controller serial no. </param>
 	/// <param name="channel">  The channel (1 to n). </param>
 	/// <param name="reverse"> if  <c>true</c> then directions will be swapped on these moves. </param>
+	/// <returns> The error code (see \ref C_DLL_ERRORCODES_page "Error Codes") or zero if successful. </returns>
 	BENCHTOPDCSERVO_API short __cdecl BDC_SetDirection(char const * serialNo, short channel, bool reverse);
 
 	/// <summary> Stop the current move immediately (with risk of losing track of position). </summary>
@@ -1240,9 +1256,8 @@ extern "C"
 	/// <param name="channel"> The channel (1 to n). </param>
 	/// <returns>	The software limits mode <list type=table>
 	///							<item><term> Disable any move outside travel range. </term><term>0</term></item>
-	///							<item><term> Disable any move outside travel range, but allow moves 'just beyond limit' to be truncated to limit. </term><term>1</term></item>
-	///							<item><term> Truncate all moves beyond limit to the current limit. </term><term>2</term></item>
-	///							<item><term> Allow all moves, illegal or not. </term><term>3</term></item>
+	///							<item><term> Truncate all moves beyond limit to the current limit. </term><term>1</term></item>
+	///							<item><term> Allow all moves, illegal or not. </term><term>2</term></item>
 	/// 		  </list>. </returns>
 	/// <returns> The software limits mode. </returns>
 	/// <seealso cref="BDC_SetLimitsSoftwareApproachPolicy(const char * serialNo, MOT_LimitsSoftwareApproachPolicy limitsSoftwareApproachPolicy)" />
@@ -1254,10 +1269,9 @@ extern "C"
 	/// <param name="limitsSoftwareApproachPolicy"> The soft limit mode
 	/// 					 <list type=table>
 	///							<item><term> Disable any move outside travel range. </term><term>0</term></item>
-	///							<item><term> Disable any move outside travel range, but allow moves 'just beyond limit' to be truncated to limit. </term><term>1</term></item>
-	///							<item><term> Truncate all moves beyond limit to the current limit. </term><term>2</term></item>
-	///							<item><term> Allow all moves, illegal or not. </term><term>3</term></item>
-	/// 					 </list> <remarks> If these are bitwise-ORed with 0x0080 then the limits are swapped. </remarks> </param>
+	///							<item><term> Truncate all moves beyond limit to the current limit. </term><term>1</term></item>
+	///							<item><term> Allow all moves, illegal or not. </term><term>2</term></item>
+	/// 					 </list> </param>
 	/// <seealso cref="BDC_GetSoftLimitMode(const char * serialNo)" />
 	BENCHTOPDCSERVO_API void __cdecl BDC_SetLimitsSoftwareApproachPolicy(char const * serialNo, short channel, MOT_LimitsSoftwareApproachPolicy limitsSoftwareApproachPolicy);
 
@@ -1569,25 +1583,25 @@ extern "C"
 	/// <param name="serialNo"> The serial no. </param>
 	/// <param name="channel">  The channel (1 to n). </param>
 	/// <returns> The error code (see \ref C_DLL_ERRORCODES_page "Error Codes") or zero if successful. </returns>
-	/// <seealso cref="BDC_GetDCPIDParams(const char * serialNo, MOT_DC_PIDParameters *DCproportionalIntegralDifferentialParams, short channel)" />
-	/// <seealso cref="BDC_SetDCPIDParams(const char * serialNo, MOT_DC_PIDParameters *DCproportionalIntegralDifferentialParams, short channel)" />
+	/// <seealso cref="BDC_GetDCPIDParams(const char * serialNo, MOT_DC_PIDParameters *DCproportionalIntegralDerivativeParams, short channel)" />
+	/// <seealso cref="BDC_SetDCPIDParams(const char * serialNo, MOT_DC_PIDParameters *DCproportionalIntegralDerivativeParams, short channel)" />
 	BENCHTOPDCSERVO_API short __cdecl BDC_RequestDCPIDParams(const char * serialNo, short channel);
 
 	/// <summary> Gets the DC PID parameters. </summary>
 	/// <param name="serialNo"> The device serial no. </param>
 	/// <param name="channel">  The channel (1 to n). </param>
-	/// <param name="DCproportionalIntegralDifferentialParams"> Address of the MOT_DC_PIDParameters parameter to recieve the DC PID parameters. </param>
+	/// <param name="DCproportionalIntegralDerivativeParams"> Address of the MOT_DC_PIDParameters parameter to recieve the DC PID parameters. </param>
 	/// <returns> The error code (see \ref C_DLL_ERRORCODES_page "Error Codes") or zero if successful. </returns>
-	/// <seealso cref="BDC_SetDCPIDParams(const char * serialNo, MOT_DC_PIDParameters *DCproportionalIntegralDifferentialParams, short channel)" />
-	BENCHTOPDCSERVO_API short __cdecl BDC_GetDCPIDParams(const char * serialNo, MOT_DC_PIDParameters *DCproportionalIntegralDifferentialParams, short channel);
+	/// <seealso cref="BDC_SetDCPIDParams(const char * serialNo, MOT_DC_PIDParameters *DCproportionalIntegralDerivativeParams, short channel)" />
+	BENCHTOPDCSERVO_API short __cdecl BDC_GetDCPIDParams(const char * serialNo, MOT_DC_PIDParameters *DCproportionalIntegralDerivativeParams, short channel);
 
 	/// <summary> Sets the DC PID parameters. </summary>
 	/// <param name="serialNo"> The device serial no. </param>
 	/// <param name="channel">  The channel (1 to n). </param>
-	/// <param name="DCproportionalIntegralDifferentialParams"> Address of the MOT_DC_PIDParameters parameter containing the new  DC PID parameters. </param>
+	/// <param name="DCproportionalIntegralDerivativeParams"> Address of the MOT_DC_PIDParameters parameter containing the new  DC PID parameters. </param>
 	/// <returns> The error code (see \ref C_DLL_ERRORCODES_page "Error Codes") or zero if successful. </returns>
-	/// <seealso cref="BDC_GetDCPIDParams(const char * serialNo, MOT_DC_PIDParameters *DCproportionalIntegralDifferentialParams, short channel)" />
-	BENCHTOPDCSERVO_API short __cdecl BDC_SetDCPIDParams(const char * serialNo, MOT_DC_PIDParameters *DCproportionalIntegralDifferentialParams, short channel);
+	/// <seealso cref="BDC_GetDCPIDParams(const char * serialNo, MOT_DC_PIDParameters *DCproportionalIntegralDerivativeParams, short channel)" />
+	BENCHTOPDCSERVO_API short __cdecl BDC_SetDCPIDParams(const char * serialNo, MOT_DC_PIDParameters *DCproportionalIntegralDerivativeParams, short channel);
 
 	///// <summary> Gets the joystick parameters. </summary>
 	///// <param name="serialNo"> The controller serial no. </param>
@@ -1799,8 +1813,9 @@ extern "C"
 	/// <seealso cref="BDC_SetMotorTravelMode(char const * serialNo, short channel, int travelMode)" />
 	BENCHTOPDCSERVO_API MOT_TravelModes __cdecl BDC_GetMotorTravelMode(char const * serialNo, short channel);
 
+	/// \deprecated
 	/// <summary> Sets the motor stage parameters. </summary>
-	/// <remarks> @deprecated superceded by <see cref="BDC_SetMotorParamsExt(char const * serialNo, short channel, double stepsPerRevolution, double gearboxRatio, double pitch)"/> </remarks>
+	/// <remarks> superceded by <see cref="BDC_SetMotorParamsExt(char const * serialNo, short channel, double stepsPerRevolution, double gearboxRatio, double pitch)"/> </remarks>
 	/// <remarks> These parameters, when combined define the stage motion in terms of \ref RealWorldUnits_page. (mm or degrees)<br />
 	/// 		  The real world unit is defined from stepsPerRev * gearBoxRatio / pitch.</remarks>
 	/// <param name="serialNo"> The controller serial no. </param>
@@ -1812,8 +1827,9 @@ extern "C"
 	/// <seealso cref="BDC_GetMotorParams(char const * serialNo, short channel, long *stepsPerRev, long *gearBoxRatio, float *pitch)" />
 	BENCHTOPDCSERVO_API short __cdecl BDC_SetMotorParams(char const * serialNo, short channel, long stepsPerRev, long gearBoxRatio, float pitch);
 
+	/// \deprecated
 	/// <summary> Sets the motor stage parameters. </summary>
-	/// <remarks> @deprecated superceded by <see cref="BDC_GetMotorParamsExt(char const * serialNo, short channel, double *stepsPerRevolution, double *gearboxRatio, double *pitch)"/> </remarks>
+	/// <remarks> superceded by <see cref="BDC_GetMotorParamsExt(char const * serialNo, short channel, double *stepsPerRevolution, double *gearboxRatio, double *pitch)"/> </remarks>
 	/// <remarks> These parameters, when combined define the stage motion in terms of \ref RealWorldUnits_page. (mm or degrees)<br />
 	/// 		  The real world unit is defined from stepsPerRev * gearBoxRatio / pitch.</remarks>
 	/// <param name="serialNo"> The controller serial no. </param>
@@ -1911,7 +1927,7 @@ extern "C"
 	/// <seealso cref="BDC_SetMotorTravelLimits(char const * serialNo, short channel, double minPosition, double maxPosition)" />
 	BENCHTOPDCSERVO_API short __cdecl BDC_GetMotorTravelLimits(char const * serialNo, short channel, double *minPosition, double *maxPosition);
 
-	/// <summary>	Converts a devic unit to a real worl unit. </summary>
+	/// <summary>	Converts a device unit to a real world unit. </summary>
 	/// <param name="serialNo">   	The serial no. </param>
 	/// <param name="device_unit">	The device unit. </param>
 	/// <param name="channel">		 The channel (1 to n). </param>
@@ -1925,7 +1941,7 @@ extern "C"
 	/// <seealso cref="BDC_GetDeviceUnitFromRealValue(char const * serialNo, short channel, double real_unit, int *device_unit, int unitType)" />
 	BENCHTOPDCSERVO_API short __cdecl BDC_GetRealValueFromDeviceUnit(char const * serialNo, short channel, int device_unit, double *real_unit, int unitType);
 
-	/// <summary>	Converts a devic unit to a real worl unit. </summary>
+	/// <summary>	Converts a device unit to a real world unit. </summary>
 	/// <param name="serialNo">   	The serial no. </param>
 	/// <param name="channel">		 The channel (1 to n). </param>
 	/// <param name="device_unit">	The device unit. </param>

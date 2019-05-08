@@ -33,7 +33,7 @@
  */
 extern "C"
 {
-	/// \cond NOT_MASTER
+/// \cond NOT_MASTER
 	
 	/// <summary> Values that represent FT_Status. </summary>
 	typedef enum FT_Status : short
@@ -58,7 +58,7 @@ extern "C"
 		MOT_BrushlessMotor = 3, /// <A Brushless DC Motor.
 		MOT_CustomMotor = 100, /// <A custom motor
 	} MOT_MotorTypes;
-	/// \endcond
+/// \endcond
 
 	/// <summary> Information about the device generated from serial number. </summary>
 	#pragma pack(1)
@@ -292,6 +292,19 @@ extern "C"
 	/// <seealso cref="TLI_GetDeviceListByTypeExt(char *receiveBuffer, DWORD sizeOfBuffer, int typeID)" />
 	/// <seealso cref="TLI_GetDeviceListByTypesExt(char *receiveBuffer, DWORD sizeOfBuffer, int * typeIDs, int length)" />
 	TCUBESTRAINGAUGE_API short __cdecl TLI_GetDeviceInfo(char const * serialNo, TLI_DeviceInfo *info);
+
+	/// <summary> Initialize a connection to the Simulation Manager, which must already be running. </summary>
+	/// <remarks> Call TLI_InitializeSimulations before TLI_BuildDeviceList at the start of the program to make a connection to the simulation manager.<Br />
+	/// 		  Any devices configured in the simulation manager will become visible TLI_BuildDeviceList is called and can be accessed using TLI_GetDeviceList.<Br />
+	/// 		  Call TLI_InitializeSimulations at the end of the program to release the simulator.  </remarks>
+	/// <seealso cref="TLI_UninitializeSimulations()" />
+	/// <seealso cref="TLI_BuildDeviceList()" />
+	/// <seealso cref="TLI_GetDeviceList(SAFEARRAY** stringsReceiver)" />
+	TCUBESTRAINGAUGE_API void __cdecl TLI_InitializeSimulations();
+
+	/// <summary> Uninitialize a connection to the Simulation Manager, which must already be running. </summary>
+	/// <seealso cref="TLI_InitializeSimulations()" />
+	TCUBESTRAINGAUGE_API void __cdecl TLI_UninitializeSimulations();
 
 	/// <summary> Open the device for communications. </summary>
 	/// <param name="serialNo">	The serial no of the device to be connected. </param>
@@ -581,14 +594,15 @@ extern "C"
 	/// <seealso cref="SG_StartPolling(char const * serialNo, int milliseconds)" />
 	TCUBESTRAINGAUGE_API short __cdecl SG_RequestReading(char const * serialNo);
 
+	/// \deprecated
 	/// <summary> Gets the current reading. </summary>
-	/// <remarks> @deprecated superceded by <see cref="SG_GetReadingExt(char const * serialNo, bool clipped, bool *overrange)"/> </remarks>
+	/// <remarks> superceded by <see cref="SG_GetReadingExt(char const * serialNo, bool clipped, bool *overrange)"/> </remarks>
 	/// <param name="serialNo"> The device serial no. </param>
 	/// <param name="smoothed"> not used. </param>
 	/// <returns> The reading, which is mode dependent, see <see cref="SG_GetDisplayMode(char const * serialNo)" /><br />
 	///			  The range is +/- 32767 which corresponds to +/- 100% of maximum value, see table.
 	/// 		  <list type=table>
-	///				<item><term>Position</term><term>Reading is the percentage of Max Travel (microns) <see cref="SG_GetMaximumTravel(char const * serialNo)" /> </term></item>
+	///				<item><term>Position</term><term>Reading is the percentage of Max Travel (micrometres) <see cref="SG_GetMaximumTravel(char const * serialNo)" /> </term></item>
 	///				<item><term>Voltage</term><term>Reading is the percentage of Max Voltage (V)</term></item>
 	///				<item><term>Force</term><term>Reading is the percentage of Max Force (N) <see cref="SG_GetForceCalib(char const * serialNo)" /></term></item>
 	/// 		  </list> </returns>
@@ -610,7 +624,7 @@ extern "C"
 	/// <returns> The reading, which is mode dependent, see <see cref="SG_GetDisplayMode(char const * serialNo)" /><br />
 	///			  The range if clipped is +/- 32767 which corresponds to +/- 100% of maximum value, see table.
 	/// 		  <list type=table>
-	///				<item><term>Position</term><term>Reading is the percentage of Max Travel (microns) <see cref="SG_GetMaximumTravel(char const * serialNo)" /> </term></item>
+	///				<item><term>Position</term><term>Reading is the percentage of Max Travel (micrometres) <see cref="SG_GetMaximumTravel(char const * serialNo)" /> </term></item>
 	///				<item><term>Voltage</term><term>Reading is the percentage of Max Voltage (V)</term></item>
 	///				<item><term>Force</term><term>Reading is the percentage of Max Force (N) <see cref="SG_GetForceCalib(char const * serialNo)" /></term></item>
 	/// 		  </list> </returns>

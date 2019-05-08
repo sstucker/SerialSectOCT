@@ -40,7 +40,7 @@
 
 extern "C"
 {
-	/// \cond NOT_MASTER
+/// \cond NOT_MASTER
 	
 	/// <summary> The Piezo Control Modes. </summary>
 	/// \ingroup Common
@@ -77,7 +77,7 @@ extern "C"
 		PZ_OutputTrigRepeat = 0x80, ///<Output trigger repeats.
 	} PZ_OutputLUTModes;
 
-	/// \endcond
+/// \endcond
 
 	#pragma pack(1)
 	

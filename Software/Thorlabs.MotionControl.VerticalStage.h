@@ -36,7 +36,7 @@ extern "C"
  *  @{
  */
 
-	/// \cond NOT_MASTER
+/// \cond NOT_MASTER
 
 	/// <summary> Values that represent FT_Status. </summary>
 	typedef enum FT_Status : short
@@ -183,7 +183,7 @@ extern "C"
 		KMOT_TrigPolarityLow = 0x02,///< Trigger Polarity Low
 	} KMOT_TriggerPortPolarity;
 
-	/// \endcond
+/// \endcond
 
 	/// <summary> Information about the device generated from serial number. </summary>
 	#pragma pack(1)
@@ -375,7 +375,8 @@ extern "C"
 		int proportionalGain;
 		/// <summary> The PID Integral Gain. </summary>
 		int integralGain;
-		/// <summary> The PID Differential Gain. </summary>
+		/// <summary> The PID Derivative Gain. </summary>
+		/// <remarks> Kept as differentialGain rather than derivativeGain for backward compatibility</remarks>
 		int differentialGain;
 		/// <summary> The PID Integral Limit. </summary>
 		int integralLimit;
@@ -384,7 +385,7 @@ extern "C"
 		/// 		 <list type=table>
 		///				<item><term>Bit 1 (0x01)</term><term>When set, enable Proportional Gain component.</term></item>
 		///				<item><term>Bit 2 (0x02)</term><term>When set, enable Integral Gain component.</term></item>
-		///				<item><term>Bit 3 (0x04)</term><term>When set, enable Differential Gain component.</term></item>
+		///				<item><term>Bit 3 (0x04)</term><term>When set, enable Derivative Gain component.</term></item>
 		///				<item><term>Bit 4 (0x08)</term><term>When set, enable Integral Limit component.</term></item>
 		/// 		  </list> </remarks>
 		WORD parameterFilter;
@@ -631,6 +632,19 @@ extern "C"
 	/// <seealso cref="TLI_GetDeviceListByTypesExt(char *receiveBuffer, DWORD sizeOfBuffer, int * typeIDs, int length)" />
 	KCUBEDCSERVO_API short __cdecl TLI_GetDeviceInfo(char const * serialNo, TLI_DeviceInfo *info);
 
+	/// <summary> Initialize a connection to the Simulation Manager, which must already be running. </summary>
+	/// <remarks> Call TLI_InitializeSimulations before TLI_BuildDeviceList at the start of the program to make a connection to the simulation manager.<Br />
+	/// 		  Any devices configured in the simulation manager will become visible TLI_BuildDeviceList is called and can be accessed using TLI_GetDeviceList.<Br />
+	/// 		  Call TLI_InitializeSimulations at the end of the program to release the simulator.  </remarks>
+	/// <seealso cref="TLI_UninitializeSimulations()" />
+	/// <seealso cref="TLI_BuildDeviceList()" />
+	/// <seealso cref="TLI_GetDeviceList(SAFEARRAY** stringsReceiver)" />
+	KCUBEDCSERVO_API void __cdecl TLI_InitializeSimulations();
+
+	/// <summary> Uninitialize a connection to the Simulation Manager, which must already be running. </summary>
+	/// <seealso cref="TLI_InitializeSimulations()" />
+	KCUBEDCSERVO_API void __cdecl TLI_UninitializeSimulations();
+
 	/// <summary> Open the device for communications. </summary>
 	/// <param name="serialNo">	The serial no of the device to be connected. </param>
 	/// <returns> The error code (see \ref C_DLL_ERRORCODES_page "Error Codes") or zero if successful. </returns>
@@ -747,6 +761,39 @@ extern "C"
 	/// <seealso cref="CC_DisableChannel(char const * serialNo)" />
 	KCUBEDCSERVO_API short __cdecl CC_EnableChannel(char const * serialNo);
 
+	/// <summary> Determine if the device front panel can be locked. </summary>
+	/// <param name="serialNo">	The device serial no. </param>
+	/// <returns> True if we can lock the device front panel, false if not. </returns>
+	/// <seealso cref="CC_GetFrontPanelLocked(char const * serialNo)" />
+	/// <seealso cref="CC_RequestFrontPanelLocked(char const * serialNo)" />
+	/// <seealso cref="CC_SetFrontPanelLock(char const * serialNo, bool locked)" />
+	KCUBEDCSERVO_API bool __cdecl CC_CanDeviceLockFrontPanel(char const * serialNo);
+
+	/// <summary> Query if the device front panel locked. </summary>
+	/// <param name="serialNo">	The device serial no. </param>
+	/// <returns> True if the device front panel is locked, false if not. </returns>
+	/// <seealso cref="CC_CanDeviceLockFrontPanel(char const * serialNo)" />
+	/// <seealso cref="CC_RequestFrontPanelLocked(char const * serialNo)" />
+	/// <seealso cref="CC_SetFrontPanelLock(char const * serialNo, bool locked)" />
+	KCUBEDCSERVO_API bool __cdecl  CC_GetFrontPanelLocked(char const * serialNo);
+
+	/// <summary> Ask the device if its front panel is locked. </summary>
+	/// <param name="serialNo">	The device serial no. </param>
+	/// <returns> The error code (see \ref C_DLL_ERRORCODES_page "Error Codes") or zero if successful. </returns>
+	/// <seealso cref="CC_CanDeviceLockFrontPanel(char const * serialNo)" />
+	/// <seealso cref="CC_GetFrontPanelLocked(char const * serialNo)" />
+	/// <seealso cref="CC_SetFrontPanelLock(char const * serialNo, bool locked)" />
+	KCUBEDCSERVO_API short __cdecl  CC_RequestFrontPanelLocked(char const * serialNo);
+
+	/// <summary> Sets the device front panel lock state. </summary>
+	/// <param name="serialNo">	The device serial no. </param>
+	/// <param name="locked"> True to lock the device, false to unlock. </param>
+	/// <returns> The error code (see \ref C_DLL_ERRORCODES_page "Error Codes") or zero if successful. </returns>
+	/// <seealso cref="CC_CanDeviceLockFrontPanel(char const * serialNo)" />
+	/// <seealso cref="CC_GetFrontPanelLocked(char const * serialNo)" />
+	/// <seealso cref="CC_RequestFrontPanelLocked(char const * serialNo)" />
+	KCUBEDCSERVO_API short __cdecl  CC_SetFrontPanelLock(char const * serialNo, bool locked);
+
 	/// <summary> Get number of positions. </summary>
 	/// <remarks> The GetNumberPositions function will get the maximum position reachable by the device.<br />
 	/// 		  The motor may need to be \ref C_MOTOR_sec10 "Homed" before this parameter can be used. </remarks>
@@ -792,8 +839,9 @@ extern "C"
 	/// <returns> <c>true</c> if the device can home. </returns>
 	KCUBEDCSERVO_API bool __cdecl CC_CanHome(char const * serialNo);
 
+	/// \deprecated
 	/// <summary> Does the device need to be Homed before a move can be performed. </summary>
-	/// <remarks> @deprecated superceded by <see cref="CC_CanMoveWithoutHomingFirst(char const * serialNo)"/> </remarks>
+	/// <remarks> superceded by <see cref="CC_CanMoveWithoutHomingFirst(char const * serialNo)"/> </remarks>
 	/// <param name="serialNo"> The serial no. </param>
 	/// <returns> <c>true</c> if the device needs homing. </returns>
 	KCUBEDCSERVO_API bool __cdecl CC_NeedsHoming(char const * serialNo);
@@ -1114,6 +1162,7 @@ extern "C"
 	/// 		  This parameter will tell the system to reverse the direction sense whnd moving, jogging etc. </remarks>
 	/// <param name="serialNo">	The device serial no. </param>
 	/// <param name="reverse"> if  <c>true</c> then directions will be swapped on these moves. </param>
+	/// <returns> The error code (see \ref C_DLL_ERRORCODES_page "Error Codes") or zero if successful. </returns>
 	KCUBEDCSERVO_API void __cdecl CC_SetDirection(char const * serialNo, bool reverse);
 
 
@@ -1201,9 +1250,8 @@ extern "C"
 	/// <param name="serialNo">	The device serial no. </param>
 	/// <returns>	The software limits mode <list type=table>
 	///							<item><term> Disable any move outside travel range. </term><term>0</term></item>
-	///							<item><term> Disable any move outside travel range, but allow moves 'just beyond limit' to be truncated to limit. </term><term>1</term></item>
-	///							<item><term> Truncate all moves beyond limit to the current limit. </term><term>2</term></item>
-	///							<item><term> Allow all moves, illegal or not. </term><term>3</term></item>
+	///							<item><term> Truncate all moves beyond limit to the current limit. </term><term>1</term></item>
+	///							<item><term> Allow all moves, illegal or not. </term><term>2</term></item>
 	/// 		  </list>. </returns>
 	/// <returns> The software limits mode. </returns>
 	/// <seealso cref="CC_SetLimitsSoftwareApproachPolicy(const char * serialNo, MOT_LimitsSoftwareApproachPolicy limitsSoftwareApproachPolicy)" />
@@ -1214,10 +1262,9 @@ extern "C"
 	/// <param name="limitsSoftwareApproachPolicy"> The soft limit mode
 	/// 					 <list type=table>
 	///							<item><term> Disable any move outside travel range. </term><term>0</term></item>
-	///							<item><term> Disable any move outside travel range, but allow moves 'just beyond limit' to be truncated to limit. </term><term>1</term></item>
-	///							<item><term> Truncate all moves beyond limit to the current limit. </term><term>2</term></item>
-	///							<item><term> Allow all moves, illegal or not. </term><term>3</term></item>
-	/// 					 </list> <remarks> If these are bitwise-ORed with 0x0080 then the limits are swapped. </remarks> </param>
+	///							<item><term> Truncate all moves beyond limit to the current limit. </term><term>1</term></item>
+	///							<item><term> Allow all moves, illegal or not. </term><term>2</term></item>
+	/// 					 </list> </param>
 	/// <seealso cref="CC_GetSoftLimitMode(const char * serialNo)" />
 	KCUBEDCSERVO_API void __cdecl CC_SetLimitsSoftwareApproachPolicy(char const * serialNo, MOT_LimitsSoftwareApproachPolicy limitsSoftwareApproachPolicy);
 
@@ -1568,25 +1615,25 @@ extern "C"
 	/// <summary> Request the PID parameters for DC motors used in an algorithm involving calculus. </summary>
 	/// <param name="serialNo"> The device serial no. </param>
 	/// <returns> The error code (see \ref C_DLL_ERRORCODES_page "Error Codes") or zero if successful. </returns>
-	/// <seealso cref="CC_GetDCPIDParams(const char * serialNo, MOT_DC_PIDParameters *DCproportionalIntegralDifferentialParams)" />
-	/// <seealso cref="CC_SetDCPIDParams(const char * serialNo, MOT_DC_PIDParameters *DCproportionalIntegralDifferentialParams)" />
+	/// <seealso cref="CC_GetDCPIDParams(const char * serialNo, MOT_DC_PIDParameters *DCproportionalIntegralDerivativeParams)" />
+	/// <seealso cref="CC_SetDCPIDParams(const char * serialNo, MOT_DC_PIDParameters *DCproportionalIntegralDerivativeParams)" />
 	KCUBEDCSERVO_API short __cdecl CC_RequestDCPIDParams(const char * serialNo);
 
 	/// <summary> Get the DC PID parameters for DC motors used in an algorithm involving calculus. </summary>
 	/// <param name="serialNo"> The device serial no. </param>
-	/// <param name="DCproportionalIntegralDifferentialParams"> [in,out] If non-null, a variable-length parameters list containing DC PID parameters. </param>
+	/// <param name="DCproportionalIntegralDerivativeParams"> [in,out] If non-null, a variable-length parameters list containing DC PID parameters. </param>
 	/// <returns> The error code (see \ref C_DLL_ERRORCODES_page "Error Codes") or zero if successful. </returns>
 	/// <seealso cref="CC_RequestDCPIDParams(char const * serialNo)" />
-	/// <seealso cref="CC_SetDCPIDParams(const char * serialNo, MOT_DC_PIDParameters *DCproportionalIntegralDifferentialParams)" />
-	KCUBEDCSERVO_API short __cdecl CC_GetDCPIDParams(const char * serialNo, MOT_DC_PIDParameters *DCproportionalIntegralDifferentialParams);
+	/// <seealso cref="CC_SetDCPIDParams(const char * serialNo, MOT_DC_PIDParameters *DCproportionalIntegralDerivativeParams)" />
+	KCUBEDCSERVO_API short __cdecl CC_GetDCPIDParams(const char * serialNo, MOT_DC_PIDParameters *DCproportionalIntegralDerivativeParams);
 
 	/// <summary> Set the PID parameters for DC motors used in an algorithm involving calculus. </summary>
 	/// <param name="serialNo"> The device serial no. </param>
-	/// <param name="DCproportionalIntegralDifferentialParams"> [in,out] If non-null, a variable-length parameters list containing DC PID parameters. </param>
+	/// <param name="DCproportionalIntegralDerivativeParams"> [in,out] If non-null, a variable-length parameters list containing DC PID parameters. </param>
 	/// <returns> The error code (see \ref C_DLL_ERRORCODES_page "Error Codes") or zero if successful. </returns>
 	/// <seealso cref="CC_RequestDCPIDParams(char const * serialNo)" />
-	/// <seealso cref="CC_GetDCPIDParams(const char * serialNo, MOT_DC_PIDParameters *DCproportionalIntegralDifferentialParams)" />
-	KCUBEDCSERVO_API short __cdecl CC_SetDCPIDParams(const char * serialNo, MOT_DC_PIDParameters *DCproportionalIntegralDifferentialParams);
+	/// <seealso cref="CC_GetDCPIDParams(const char * serialNo, MOT_DC_PIDParameters *DCproportionalIntegralDerivativeParams)" />
+	KCUBEDCSERVO_API short __cdecl CC_SetDCPIDParams(const char * serialNo, MOT_DC_PIDParameters *DCproportionalIntegralDerivativeParams);
 
 
 	/// <summary> Suspend automatic messages at ends of moves. </summary>
@@ -1765,8 +1812,9 @@ extern "C"
 	/// <seealso cref="CC_SetMotorTravelMode(char const * serialNo, int travelMode)" />
 	KCUBEDCSERVO_API MOT_TravelModes __cdecl CC_GetMotorTravelMode(char const * serialNo);
 
+	/// \deprecated
 	/// <summary> Sets the motor stage parameters. </summary>
-	/// <remarks> @deprecated superceded by <see cref="CC_SetMotorParamsExt(char const * serialNo, double stepsPerRevolution, double gearboxRatio, double pitch)"/> </remarks>
+	/// <remarks> superceded by <see cref="CC_SetMotorParamsExt(char const * serialNo, double stepsPerRevolution, double gearboxRatio, double pitch)"/> </remarks>
 	/// <remarks> These parameters, when combined define the stage motion in terms of \ref RealWorldUnits_page. (mm or degrees)<br />
 	/// 		  The real world unit is defined from stepsPerRev * gearBoxRatio / pitch.</remarks>
 	/// <param name="serialNo"> The device serial no. </param>
@@ -1777,8 +1825,9 @@ extern "C"
 	/// <seealso cref="CC_GetMotorParams(char const * serialNo, long *stepsPerRev, long *gearBoxRatio, float *pitch)" />
 	KCUBEDCSERVO_API short __cdecl CC_SetMotorParams(char const * serialNo, long stepsPerRev, long gearBoxRatio, float pitch);
 
+	/// \deprecated
 	/// <summary> Gets the motor stage parameters. </summary>
-	/// <remarks> @deprecated superceded by <see cref="CC_GetMotorParamsExt(char const * serialNo, double *stepsPerRevolution, double *gearboxRatio, double *pitch)"/> </remarks>
+	/// <remarks> superceded by <see cref="CC_GetMotorParamsExt(char const * serialNo, double *stepsPerRevolution, double *gearboxRatio, double *pitch)"/> </remarks>
 	/// <remarks> These parameters, when combined define the stage motion in terms of \ref RealWorldUnits_page. (mm or degrees)<br />
 	/// 		  The real world unit is defined from stepsPerRev * gearBoxRatio / pitch.</remarks>
 	/// <param name="serialNo"> The device serial no. </param>
@@ -1845,7 +1894,7 @@ extern "C"
 	/// <seealso cref="CC_SetMotorTravelLimits(char const * serialNo, double minPosition, double maxPosition)" />
 	KCUBEDCSERVO_API short __cdecl CC_GetMotorTravelLimits(char const * serialNo, double *minPosition, double *maxPosition);
 
-	/// <summary>	Converts a devic unit to a real worl unit. </summary>
+	/// <summary>	Converts a device unit to a real world unit. </summary>
 	/// <param name="serialNo">   	The serial no. </param>
 	/// <param name="device_unit">	The device unit. </param>
 	/// <param name="real_unit">  	The real unit. </param>
@@ -1858,7 +1907,7 @@ extern "C"
 	/// <seealso cref="CC_GetDeviceUnitFromRealValue(char const * serialNo, double real_unit, int *device_unit, int unitType)" />
 	KCUBEDCSERVO_API short __cdecl CC_GetRealValueFromDeviceUnit(char const * serialNo, int device_unit, double *real_unit, int unitType);
 
-	/// <summary>	Converts a devic unit to a real worl unit. </summary>
+	/// <summary>	Converts a device unit to a real world unit. </summary>
 	/// <param name="serialNo">   	The serial no. </param>
 	/// <param name="device_unit">	The device unit. </param>
 	/// <param name="real_unit">  	The real unit. </param>

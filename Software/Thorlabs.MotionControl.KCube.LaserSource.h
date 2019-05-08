@@ -33,7 +33,7 @@
  */
 extern "C"
 {
-	/// \cond NOT_MASTER
+/// \cond NOT_MASTER
 	
 	/// <summary> Values that represent FT_Status. </summary>
 	typedef enum FT_Status : short
@@ -58,7 +58,7 @@ extern "C"
 		MOT_BrushlessMotor = 3,
 		MOT_CustomMotor = 100,
 	} MOT_MotorTypes;
-	/// \endcond
+/// \endcond
 
 	/// <summary> Information about the device generated from serial number. </summary>
 	#pragma pack(1)
@@ -130,7 +130,7 @@ extern "C"
 	{
 		LS_SoftwareOnly = 0,///< Input is read from software only
 		LS_ExternalSignal = 0x01,///<Input is read from software or External signal
-		LS_Potentiometer = 0x04,///<Input is read from software or Potentiometer
+		LS_WheelAndSoftware = 0x04,///<Input is read from software or Potentiometer
 	} LS_InputSourceFlags;
 
 	/// <summary>	The KLS display parameters. </summary>
@@ -339,6 +339,19 @@ extern "C"
 	/// <seealso cref="TLI_GetDeviceListByTypesExt(char *receiveBuffer, DWORD sizeOfBuffer, int * typeIDs, int length)" />
 	KLASERSOURCE_API short __cdecl TLI_GetDeviceInfo(char const * serialNo, TLI_DeviceInfo *info);
 
+	/// <summary> Initialize a connection to the Simulation Manager, which must already be running. </summary>
+	/// <remarks> Call TLI_InitializeSimulations before TLI_BuildDeviceList at the start of the program to make a connection to the simulation manager.<Br />
+	/// 		  Any devices configured in the simulation manager will become visible TLI_BuildDeviceList is called and can be accessed using TLI_GetDeviceList.<Br />
+	/// 		  Call TLI_InitializeSimulations at the end of the program to release the simulator.  </remarks>
+	/// <seealso cref="TLI_UninitializeSimulations()" />
+	/// <seealso cref="TLI_BuildDeviceList()" />
+	/// <seealso cref="TLI_GetDeviceList(SAFEARRAY** stringsReceiver)" />
+	KLASERSOURCE_API void __cdecl TLI_InitializeSimulations();
+
+	/// <summary> Uninitialize a connection to the Simulation Manager, which must already be running. </summary>
+	/// <seealso cref="TLI_InitializeSimulations()" />
+	KLASERSOURCE_API void __cdecl TLI_UninitializeSimulations();
+
 	/// <summary> Open the device for communications. </summary>
 	/// <param name="serialNo">	The serial no of the device to be connected. </param>
 	/// <returns> The error code (see \ref C_DLL_ERRORCODES_page "Error Codes") or zero if successful. </returns>
@@ -431,6 +444,39 @@ extern "C"
 	/// <remarks> see \ref C_MESSAGES_page "Device Messages" for details on how to use messages. </remarks>
 	/// <param name="serialNo"> The device serial no. </param>
 	KLASERSOURCE_API void __cdecl LS_ClearMessageQueue(char const * serialNo);
+
+	/// <summary> Determine if the device front panel can be locked. </summary>
+	/// <param name="serialNo">	The device serial no. </param>
+	/// <returns> True if we can lock the device front panel, false if not. </returns>
+	/// <seealso cref="LS_GetFrontPanelLocked(char const * serialNo)" />
+	/// <seealso cref="LS_RequestFrontPanelLocked(char const * serialNo)" />
+	/// <seealso cref="LS_SetFrontPanelLock(char const * serialNo, bool locked)" />
+	KLASERSOURCE_API bool __cdecl LS_CanDeviceLockFrontPanel(char const * serialNo);
+
+	/// <summary> Query if the device front panel locked. </summary>
+	/// <param name="serialNo">	The device serial no. </param>
+	/// <returns> True if the device front panel is locked, false if not. </returns>
+	/// <seealso cref="LS_CanDeviceLockFrontPanel(char const * serialNo)" />
+	/// <seealso cref="LS_RequestFrontPanelLocked(char const * serialNo)" />
+	/// <seealso cref="LS_SetFrontPanelLock(char const * serialNo, bool locked)" />
+	KLASERSOURCE_API bool __cdecl  LS_GetFrontPanelLocked(char const * serialNo);
+
+	/// <summary> Ask the device if its front panel is locked. </summary>
+	/// <param name="serialNo">	The device serial no. </param>
+	/// <returns> The error code (see \ref C_DLL_ERRORCODES_page "Error Codes") or zero if successful. </returns>
+	/// <seealso cref="LS_CanDeviceLockFrontPanel(char const * serialNo)" />
+	/// <seealso cref="LS_GetFrontPanelLocked(char const * serialNo)" />
+	/// <seealso cref="LS_SetFrontPanelLock(char const * serialNo, bool locked)" />
+	KLASERSOURCE_API short __cdecl  LS_RequestFrontPanelLocked(char const * serialNo);
+
+	/// <summary> Sets the device front panel lock state. </summary>
+	/// <param name="serialNo">	The device serial no. </param>
+	/// <param name="locked"> True to lock the device, false to unlock. </param>
+	/// <returns> The error code (see \ref C_DLL_ERRORCODES_page "Error Codes") or zero if successful. </returns>
+	/// <seealso cref="LS_CanDeviceLockFrontPanel(char const * serialNo)" />
+	/// <seealso cref="LS_GetFrontPanelLocked(char const * serialNo)" />
+	/// <seealso cref="LS_RequestFrontPanelLocked(char const * serialNo)" />
+	KLASERSOURCE_API short __cdecl  LS_SetFrontPanelLock(char const * serialNo, bool locked);
 
 	/// <summary> Registers a callback on the message queue. </summary>
 	/// <remarks> see \ref C_MESSAGES_page "Device Messages" for details on how to use messages. </remarks>

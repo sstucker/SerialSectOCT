@@ -32,7 +32,7 @@
  */
 extern "C"
 {
-	/// \cond NOT_MASTER
+/// \cond NOT_MASTER
 
 	/// <summary> Values that represent FT_Status. </summary>
 	typedef enum FT_Status : short
@@ -531,6 +531,19 @@ extern "C"
 	/// <seealso cref="TLI_GetDeviceListByTypesExt(char *receiveBuffer, DWORD sizeOfBuffer, int * typeIDs, int length)" />
 	KCUBEINERTIALMOTOR_API short __cdecl TLI_GetDeviceInfo(char const * serialNo, TLI_DeviceInfo *info);
 
+	/// <summary> Initialize a connection to the Simulation Manager, which must already be running. </summary>
+	/// <remarks> Call TLI_InitializeSimulations before TLI_BuildDeviceList at the start of the program to make a connection to the simulation manager.<Br />
+	/// 		  Any devices configured in the simulation manager will become visible TLI_BuildDeviceList is called and can be accessed using TLI_GetDeviceList.<Br />
+	/// 		  Call TLI_InitializeSimulations at the end of the program to release the simulator.  </remarks>
+	/// <seealso cref="TLI_UninitializeSimulations()" />
+	/// <seealso cref="TLI_BuildDeviceList()" />
+	/// <seealso cref="TLI_GetDeviceList(SAFEARRAY** stringsReceiver)" />
+	KCUBEINERTIALMOTOR_API void __cdecl TLI_InitializeSimulations();
+
+	/// <summary> Uninitialize a connection to the Simulation Manager, which must already be running. </summary>
+	/// <seealso cref="TLI_InitializeSimulations()" />
+	KCUBEINERTIALMOTOR_API void __cdecl TLI_UninitializeSimulations();
+
 	/// <summary> Open the device for communications. </summary>
 	/// <param name="serialNo">	The serial no of the device to be connected. </param>
 	/// <returns> The error code (see \ref C_DLL_ERRORCODES_page "Error Codes") or zero if successful. </returns>
@@ -619,6 +632,39 @@ extern "C"
 	/// <returns> The error code (see \ref C_DLL_ERRORCODES_page "Error Codes") or zero if successful. </returns>
 	/// <seealso cref="KIM_Disable(char const * serialNo)" />
 	KCUBEINERTIALMOTOR_API short __cdecl KIM_Enable(char const * serialNo);
+
+	/// <summary> Determine if the device front panel can be locked. </summary>
+	/// <param name="serialNo">	The device serial no. </param>
+	/// <returns> True if we can lock the device front panel, false if not. </returns>
+	/// <seealso cref="KIM_GetFrontPanelLocked(char const * serialNo)" />
+	/// <seealso cref="KIM_RequestFrontPanelLocked(char const * serialNo)" />
+	/// <seealso cref="KIM_SetFrontPanelLock(char const * serialNo, bool locked)" />
+	KCUBEINERTIALMOTOR_API bool __cdecl KIM_CanDeviceLockFrontPanel(char const * serialNo);
+
+	/// <summary> Query if the device front panel locked. </summary>
+	/// <param name="serialNo">	The device serial no. </param>
+	/// <returns> True if the device front panel is locked, false if not. </returns>
+	/// <seealso cref="KIM_CanDeviceLockFrontPanel(char const * serialNo)" />
+	/// <seealso cref="KIM_RequestFrontPanelLocked(char const * serialNo)" />
+	/// <seealso cref="KIM_SetFrontPanelLock(char const * serialNo, bool locked)" />
+	KCUBEINERTIALMOTOR_API bool __cdecl  KIM_GetFrontPanelLocked(char const * serialNo);
+
+	/// <summary> Ask the device if its front panel is locked. </summary>
+	/// <param name="serialNo">	The device serial no. </param>
+	/// <returns> The error code (see \ref C_DLL_ERRORCODES_page "Error Codes") or zero if successful. </returns>
+	/// <seealso cref="KIM_CanDeviceLockFrontPanel(char const * serialNo)" />
+	/// <seealso cref="KIM_GetFrontPanelLocked(char const * serialNo)" />
+	/// <seealso cref="KIM_SetFrontPanelLock(char const * serialNo, bool locked)" />
+	KCUBEINERTIALMOTOR_API short __cdecl  KIM_RequestFrontPanelLocked(char const * serialNo);
+
+	/// <summary> Sets the device front panel lock state. </summary>
+	/// <param name="serialNo">	The device serial no. </param>
+	/// <param name="locked"> True to lock the device, false to unlock. </param>
+	/// <returns> The error code (see \ref C_DLL_ERRORCODES_page "Error Codes") or zero if successful. </returns>
+	/// <seealso cref="KIM_CanDeviceLockFrontPanel(char const * serialNo)" />
+	/// <seealso cref="KIM_GetFrontPanelLocked(char const * serialNo)" />
+	/// <seealso cref="KIM_RequestFrontPanelLocked(char const * serialNo)" />
+	KCUBEINERTIALMOTOR_API short __cdecl  KIM_SetFrontPanelLock(char const * serialNo, bool locked);
 
 	/// <summary> Reset the device. </summary>
 	/// <param name="serialNo">	The device serial no. </param>
@@ -970,6 +1016,8 @@ extern "C"
 	/// <param name="maxStepRate">	   	[out] The maximum step rate. </param>
 	/// <param name="directionSense">  	[out] The direction sense. </param>
 	/// <param name="displayIntensity">	[out] The display intensity. </param>
+	/// <param name="presetPos1">		[out] The first preset position. </param>
+	/// <param name="presetPos2">		[out] The second preset position. </param>
 	/// <returns>	The error code (see \ref C_DLL_ERRORCODES_page "Error Codes") or zero if successful. </returns>
 	/// <seealso cref="KIM_RequestMMIParameters(char const * serialNo, KIM_Channels channel)" />
 	/// <seealso cref="KIM_SetMMIDeviceParameters(char const * serialNo, KIM_JoysticModes joystickMode, __int32 maxStepRate, KIM_DirectionSense directionSense, __int16 displayIntensity)" />

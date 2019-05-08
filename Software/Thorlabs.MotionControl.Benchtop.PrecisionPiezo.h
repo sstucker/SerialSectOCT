@@ -34,7 +34,7 @@
 
 extern "C"
 {
-	/// \cond NOT_MASTER
+/// \cond NOT_MASTER
 	
 	/// <summary> Values that represent FT_Status. </summary>
 	typedef enum FT_Status : short
@@ -59,7 +59,7 @@ extern "C"
 		MOT_BrushlessMotor = 3,
 		MOT_CustomMotor = 100,
 	} MOT_MotorTypes;
-	/// \endcond
+/// \endcond
 
 	/// <summary> Information about the device generated from serial number. </summary>
 	#pragma pack(1)
@@ -125,7 +125,7 @@ extern "C"
 		short numChannels;
 	} TLI_HardwareInformation;
 
-	/// \cond NOT_MASTER
+/// \cond NOT_MASTER
 
 	/// <summary> The Piezo Control Modes. </summary>
 	/// \ingroup Common
@@ -162,7 +162,7 @@ extern "C"
 		PZ_OutputTrigRepeat = 0x80, ///<Output trigger repeats.
 	} PZ_OutputLUTModes;
 
-	/// \endcond
+/// \endcond
 	
 	/// <summary> Values that represent PPC_FilterState. </summary>
 	typedef enum PPC_DerivFilterState : short
@@ -237,6 +237,15 @@ extern "C"
 		Optical = 0x03,
 	} PPC_IOFeedbackSourceDefinition;
 
+	/// <summary> Values that represent PPC Feedback Polarities. </summary>
+	typedef enum PPC_FeedbackPolarity : WORD
+	{
+		/// <summary> An enum constant representing the non inverted option. </summary>
+		NonInverted = 0,
+		/// <summary> An enum constant representing the inverted option. </summary>
+		Inverted = -1
+	} PPC_FeedbackPolarity;
+
 	/// <summary> Values that represent PPC_DisplayIntensity. </summary>
 	typedef enum PPC_DisplayIntensity : short
 	{
@@ -257,11 +266,11 @@ extern "C"
 		/// <summary> PID constants integral. </summary>
 		/// <remarks> The PID Integral Gain constant, range 0 to 10000</remarks>
 		float PIDConstsI;
-		/// <summary> PID constants differential. </summary>
-		/// <remarks> The PID Differential Gain constant, range 0 to 10000</remarks>
+		/// <summary> PID constants derivative. </summary>
+		/// <remarks> The PID Derivative Gain constant, range 0 to 10000</remarks>
 		float PIDConstsD;
 		/// <summary> PID constants derivative low pass filter cut-off frequency. </summary>
-		/// <remarks> The PID Differential Gain filter, range 0 to 10000</remarks>
+		/// <remarks> The PID Derivative Gain filter, range 0 to 10000</remarks>
 		float PIDConstsDFc;
 		/// <summary> PID Derivative filter on or off. </summary>
 		/// <remarks> The Filter Enabled state:
@@ -355,8 +364,13 @@ extern "C"
 		///				<item><term>3</term><term>Off.</term></item>
 		/// 		  </list></remarks>
 		PPC_DisplayIntensity FPBrightness;
-		/// <summary> reserved field. </summary>
-		WORD reserved1;
+		/// <summary> The Feedback source polarity. </summary>
+		/// <remarks> The Feedback Polarity:
+		/// 		  <list type=table>
+		///				<item><term>0</term><term>Non Inverted.</term></item>
+		///				<item><term>-1</term><term>Inverted.</term></item>
+		/// 		  </list></remarks>
+		PPC_FeedbackPolarity feedbackPolarity;
 	} PPC_IOSettings;
 	#pragma pack()
 
@@ -488,6 +502,19 @@ extern "C"
 	/// <seealso cref="TLI_GetDeviceListByTypeExt(char *receiveBuffer, DWORD sizeOfBuffer, int typeID)" />
 	/// <seealso cref="TLI_GetDeviceListByTypesExt(char *receiveBuffer, DWORD sizeOfBuffer, int * typeIDs, int length)" />
 	BENCHPRECISIONPIEZO_API short __cdecl TLI_GetDeviceInfo(char const * serialNo, TLI_DeviceInfo *info);
+
+	/// <summary> Initialize a connection to the Simulation Manager, which must already be running. </summary>
+	/// <remarks> Call TLI_InitializeSimulations before TLI_BuildDeviceList at the start of the program to make a connection to the simulation manager.<Br />
+	/// 		  Any devices configured in the simulation manager will become visible TLI_BuildDeviceList is called and can be accessed using TLI_GetDeviceList.<Br />
+	/// 		  Call TLI_InitializeSimulations at the end of the program to release the simulator.  </remarks>
+	/// <seealso cref="TLI_UninitializeSimulations()" />
+	/// <seealso cref="TLI_BuildDeviceList()" />
+	/// <seealso cref="TLI_GetDeviceList(SAFEARRAY** stringsReceiver)" />
+	BENCHPRECISIONPIEZO_API void __cdecl TLI_InitializeSimulations();
+
+	/// <summary> Uninitialize a connection to the Simulation Manager, which must already be running. </summary>
+	/// <seealso cref="TLI_InitializeSimulations()" />
+	BENCHPRECISIONPIEZO_API void __cdecl TLI_UninitializeSimulations();
 
 	/// <summary> Open the device for communications. </summary>
 	/// <param name="serialNo">	The serial no of the device to be connected. </param>
@@ -782,6 +809,7 @@ extern "C"
 	/// <summary> Requests that the Position Control Mode be read from the device. </summary>
 	/// <remarks> <I>Applies to Single Channel Precision Piezo Devices only. For multi channel use PPC2_ equivalent.</I></remarks>
 	/// <param name="serialNo">	The device serial no. </param>
+	/// <returns>	True if it succeeds, false if it fails. </returns>
 	/// <seealso cref="PPC_GetPositionControlMode(char const * serialNo)" />
 	/// <seealso cref="PPC_SetPositionControlMode(char const * serialNo, PZ_ControlModeTypes mode)" />
 	BENCHPRECISIONPIEZO_API bool __cdecl PPC_RequestPositionControlMode(char const * serialNo);

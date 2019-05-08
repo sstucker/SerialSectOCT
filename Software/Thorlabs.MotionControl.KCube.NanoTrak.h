@@ -125,7 +125,7 @@ extern "C"
 		short numChannels;
 	} TLI_HardwareInformation;
 
-	/// \cond NOT_MASTER
+/// \cond NOT_MASTER
 	
 	/// <summary> NanoTrak Signal States. </summary>
 	/// \ingroup Common
@@ -337,10 +337,10 @@ extern "C"
 	typedef enum KNA_TriggerPortMode : __int16
 	{
 		KNA_TrigDisabled = 0x00,///< Trigger Disabled
-		KNA_TrigIn_GPI = 0x01,///< General purpose logic input (<see cref="PCC_GetStatusBits(const char * serialNo)"> GetStatusBits</see>)
+		KNA_TrigIn_GPI = 0x01,///< General purpose logic input (<see cref="NT_GetStatusBits(const char * serialNo)"> GetStatusBits</see>)
 		KNA_TrigIn_VoltageStepUp = 0x02,///< Move relative using relative move parameters
 		KNA_TrigIn_VoltageStepDown = 0x03,///< Move absolute using absolute move parameters
-		KNA_TrigOut_GPO = 0x0A,///< General purpose output (<see cref="PCC_SetDigitalOutputs(const char * serialNo, byte outputBits)"> SetDigitalOutputs</see>)
+		KNA_TrigOut_GPO = 0x0A,///< General purpose output (<see cref="NT_SetDigitalOutputs(const char * serialNo, byte outputBits)"> SetDigitalOutputs</see>)
 	} KNA_TriggerPortMode;
 
 	/// <summary> Values that represent Trigger Port Polarity. </summary>
@@ -349,7 +349,7 @@ extern "C"
 		KNA_TrigPolarityHigh = 0x01,///< Trigger Polarity high
 		KNA_TrigPolarityLow = 0x02,///< Trigger Polarity Low
 	} KNA_TriggerPortPolarity;
-	/// \endcond
+/// \endcond
 
 	/// <summary> Values that represent NT_FeedbackSource. </summary>
 	enum KNA_Channels : WORD
@@ -538,6 +538,7 @@ extern "C"
 		/// 		  </list>
 		/// 		  </remarks>
 		KNA_TriggerPortPolarity Trigger1Polarity;
+		/// <summary> unused in this device. </summary>
 		__int16 unused1;
 		/// <summary> The trigger 2 mode. </summary>
 		/// <remarks> The trigger 2 operating mode:
@@ -559,6 +560,7 @@ extern "C"
 		/// 		  </list>
 		/// 		  </remarks>
 		KNA_TriggerPortPolarity Trigger2Polarity;
+		/// <summary> unused in this device. </summary>
 		__int16 unused2;
 		/// <summary> reserved fields. </summary>
 		__int16 reserved[4];
@@ -704,6 +706,19 @@ extern "C"
 	/// <seealso cref="TLI_GetDeviceListByTypesExt(char *receiveBuffer, DWORD sizeOfBuffer, int * typeIDs, int length)" />
 	NANOTRAK_API short __cdecl TLI_GetDeviceInfo(char const * serialNo, TLI_DeviceInfo *info);
 
+	/// <summary> Initialize a connection to the Simulation Manager, which must already be running. </summary>
+	/// <remarks> Call TLI_InitializeSimulations before TLI_BuildDeviceList at the start of the program to make a connection to the simulation manager.<Br />
+	/// 		  Any devices configured in the simulation manager will become visible TLI_BuildDeviceList is called and can be accessed using TLI_GetDeviceList.<Br />
+	/// 		  Call TLI_InitializeSimulations at the end of the program to release the simulator.  </remarks>
+	/// <seealso cref="TLI_UninitializeSimulations()" />
+	/// <seealso cref="TLI_BuildDeviceList()" />
+	/// <seealso cref="TLI_GetDeviceList(SAFEARRAY** stringsReceiver)" />
+	NANOTRAK_API void __cdecl TLI_InitializeSimulations();
+
+	/// <summary> Uninitialize a connection to the Simulation Manager, which must already be running. </summary>
+	/// <seealso cref="TLI_InitializeSimulations()" />
+	NANOTRAK_API void __cdecl TLI_UninitializeSimulations();
+
 	/// <summary> Open the device for communications. </summary>
 	/// <param name="serialNo">	The serial no of the device to be connected. </param>
 	/// <returns> The error code (see \ref C_DLL_ERRORCODES_page "Error Codes") or zero if successful. </returns>
@@ -722,6 +737,39 @@ extern "C"
 	/// <returns> true if the USB is listed by the ftdi controller</returns>
 	/// \include CodeSnippet_CheckConnection.cpp
 	NANOTRAK_API bool __cdecl NT_CheckConnection(char const * serialNo);
+
+	/// <summary> Determine if the device front panel can be locked. </summary>
+	/// <param name="serialNo">	The device serial no. </param>
+	/// <returns> True if we can lock the device front panel, false if not. </returns>
+	/// <seealso cref="NT_GetFrontPanelLocked(char const * serialNo)" />
+	/// <seealso cref="NT_RequestFrontPanelLocked(char const * serialNo)" />
+	/// <seealso cref="NT_SetFrontPanelLock(char const * serialNo, bool locked)" />
+	NANOTRAK_API bool __cdecl NT_CanDeviceLockFrontPanel(char const * serialNo);
+
+	/// <summary> Query if the device front panel locked. </summary>
+	/// <param name="serialNo">	The device serial no. </param>
+	/// <returns> True if the device front panel is locked, false if not. </returns>
+	/// <seealso cref="NT_CanDeviceLockFrontPanel(char const * serialNo)" />
+	/// <seealso cref="NT_RequestFrontPanelLocked(char const * serialNo)" />
+	/// <seealso cref="NT_SetFrontPanelLock(char const * serialNo, bool locked)" />
+	NANOTRAK_API bool __cdecl  NT_GetFrontPanelLocked(char const * serialNo);
+
+	/// <summary> Ask the device if its front panel is locked. </summary>
+	/// <param name="serialNo">	The device serial no. </param>
+	/// <returns> The error code (see \ref C_DLL_ERRORCODES_page "Error Codes") or zero if successful. </returns>
+	/// <seealso cref="NT_CanDeviceLockFrontPanel(char const * serialNo)" />
+	/// <seealso cref="NT_GetFrontPanelLocked(char const * serialNo)" />
+	/// <seealso cref="NT_SetFrontPanelLock(char const * serialNo, bool locked)" />
+	NANOTRAK_API short __cdecl  NT_RequestFrontPanelLocked(char const * serialNo);
+
+	/// <summary> Sets the device front panel lock state. </summary>
+	/// <param name="serialNo">	The device serial no. </param>
+	/// <param name="locked"> True to lock the device, false to unlock. </param>
+	/// <returns> The error code (see \ref C_DLL_ERRORCODES_page "Error Codes") or zero if successful. </returns>
+	/// <seealso cref="NT_CanDeviceLockFrontPanel(char const * serialNo)" />
+	/// <seealso cref="NT_GetFrontPanelLocked(char const * serialNo)" />
+	/// <seealso cref="NT_RequestFrontPanelLocked(char const * serialNo)" />
+	NANOTRAK_API short __cdecl  NT_SetFrontPanelLock(char const * serialNo, bool locked);
 
 	/// <summary> Sends a command to the device to make it identify iteself. </summary>
 	/// <param name="serialNo">	The device serial no. </param>
@@ -1398,8 +1446,9 @@ extern "C"
 	/// <returns>	True if it succeeds, false if it fails. </returns>
 	NANOTRAK_API  bool __cdecl NT_RequestMMIParams(char const * serialNo);
 
+	/// \deprecated
 	/// <summary> Get the MMI Parameters for the KCube Display Interface. </summary>
-	/// <remarks> @deprecated superceded by <see cref="CC_SetMMIParams(char const * serialNo, KMOT_WheelMode wheelMode, __int32 wheelMaxVelocity, __int32 wheelAcceleration, KMOT_WheelDirectionSense directionSense, __int32 presetPosition1, __int32 presetPosition2, __int16 displayIntensity)"/> </remarks>
+	/// <remarks> superceded by <see cref="CC_SetMMIParams(char const * serialNo, KMOT_WheelMode wheelMode, __int32 wheelMaxVelocity, __int32 wheelAcceleration, KMOT_WheelDirectionSense directionSense, __int32 presetPosition1, __int32 presetPosition2, __int16 displayIntensity)"/> </remarks>
 	/// <param name="serialNo"> The device serial no. </param>
 	/// <param name="wheelAdjustRate">  The wheel move at voltage rate.
 	/// 					<list type=table>

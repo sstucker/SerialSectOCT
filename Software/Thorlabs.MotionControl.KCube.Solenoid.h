@@ -32,7 +32,7 @@
  */
 extern "C"
 {
-	/// \cond NOT_MASTER
+/// \cond NOT_MASTER
 
 	/// <summary> Values that represent FT_Status. </summary>
 	typedef enum FT_Status : short
@@ -57,7 +57,7 @@ extern "C"
 		MOT_BrushlessMotor = 3,
 		MOT_CustomMotor = 100,
 	} MOT_MotorTypes;
-	/// \endcond
+/// \endcond
 
 	/// <summary> Information about the device generated from serial number. </summary>
 	#pragma pack(1)
@@ -380,6 +380,19 @@ extern "C"
 	/// <seealso cref="TLI_GetDeviceListByTypeExt(char *receiveBuffer, DWORD sizeOfBuffer, int typeID)" />
 	/// <seealso cref="TLI_GetDeviceListByTypesExt(char *receiveBuffer, DWORD sizeOfBuffer, int * typeIDs, int length)" />
 	KCUBESOLENOID_API short __cdecl TLI_GetDeviceInfo(char const * serialNo, TLI_DeviceInfo *info);
+
+	/// <summary> Initialize a connection to the Simulation Manager, which must already be running. </summary>
+	/// <remarks> Call TLI_InitializeSimulations before TLI_BuildDeviceList at the start of the program to make a connection to the simulation manager.<Br />
+	/// 		  Any devices configured in the simulation manager will become visible TLI_BuildDeviceList is called and can be accessed using TLI_GetDeviceList.<Br />
+	/// 		  Call TLI_InitializeSimulations at the end of the program to release the simulator.  </remarks>
+	/// <seealso cref="TLI_UninitializeSimulations()" />
+	/// <seealso cref="TLI_BuildDeviceList()" />
+	/// <seealso cref="TLI_GetDeviceList(SAFEARRAY** stringsReceiver)" />
+	KCUBESOLENOID_API void __cdecl TLI_InitializeSimulations();
+
+	/// <summary> Uninitialize a connection to the Simulation Manager, which must already be running. </summary>
+	/// <seealso cref="TLI_InitializeSimulations()" />
+	KCUBESOLENOID_API void __cdecl TLI_UninitializeSimulations();
 
 	/// <summary> Open the device for communications. </summary>
 	/// <param name="serialNo">	The serial no of the device to be connected. </param>
@@ -786,8 +799,9 @@ extern "C"
 	/// <seealso cref="SC_GetMMIParamsBlock(const char * serialNo, KMOT_MMIParams *mmiParams)" />
 	KCUBESOLENOID_API  short __cdecl SC_GetMMIParamsExt(char const * serialNo, __int16 *displayIntensity, __int16 *displayTimeout, __int16 *displayDimIntensity);
 
+	/// \deprecated
 	/// <summary> Get the MMI Parameters for the KCube Display Interface. </summary>
-	/// <remarks> @deprecated superceded by <see cref="SC_GetMMIParamsExt(char const * serialNo, __int16 *displayIntensity, __int16 *displayTimeout, __int16 *displayDimIntensity)"/> </remarks>
+	/// <remarks> superceded by <see cref="SC_GetMMIParamsExt(char const * serialNo, __int16 *displayIntensity, __int16 *displayTimeout, __int16 *displayDimIntensity)"/> </remarks>
 	/// <param name="serialNo"> The device serial no. </param>
 	/// <param name="displayIntensity">	    The display intensity, range 0 to 100%. </param>
 	/// <returns> The error code (see \ref C_DLL_ERRORCODES_page "Error Codes") or zero if successful. </returns>
@@ -809,8 +823,9 @@ extern "C"
 	/// <seealso cref="SC_GetMMIParamsBlock(const char * serialNo, KMOT_MMIParams *mmiParams)" />
 	KCUBESOLENOID_API short __cdecl SC_SetMMIParamsExt(char const * serialNo, __int16 displayIntensity, __int16 displayTimeout, __int16 displayDimIntensity);
 
+	/// \deprecated
 	/// <summary> Set the MMI Parameters for the KCube Display Interface. </summary>
-	/// <remarks> @deprecated superceded by <see cref="SC_SetMMIParamsExt(char const * serialNo, __int16 displayIntensity, __int16 displayTimeout, __int16 displayDimIntensity)"/> </remarks>
+	/// <remarks> superceded by <see cref="SC_SetMMIParamsExt(char const * serialNo, __int16 displayIntensity, __int16 displayTimeout, __int16 displayDimIntensity)"/> </remarks>
 	/// <param name="serialNo"> The device serial no. </param>
 	/// <param name="displayIntensity">	    The display intensity, range 0 to 100%. </param>
 	/// <returns> The error code (see \ref C_DLL_ERRORCODES_page "Error Codes") or zero if successful. </returns>

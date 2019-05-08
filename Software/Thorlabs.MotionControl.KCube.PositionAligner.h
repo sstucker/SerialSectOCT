@@ -16,7 +16,7 @@
 
 #include <OaIdl.h>
 /** @defgroup KCubePositionAligner KCube PositionAligner
- *  This section details the Structures and Functions relavent to the  @ref TPA001_page "KCube PositionAligner or KCube Position Aligner"<br />
+ *  This section details the Structures and Functions relavent to the  @ref KPA101_page "KCube PositionAligner or KCube Position Aligner"<br />
  *  For an example of how to connect to the device and perform simple operations use the following links:
  *  <list type=bullet>
  *    <item> \ref namespaces_kpa_ex_1 "Example of using the Thorlabs.MotionControl.KCube.PositionAligner.DLL from a C or C++ project."<br />
@@ -32,7 +32,7 @@
  */
 extern "C"
 {
-	/// \cond NOT_MASTER
+/// \cond NOT_MASTER
 
 	/// <summary> Values that represent FT_Status. </summary>
 	typedef enum FT_Status : short
@@ -57,7 +57,7 @@ extern "C"
 		MOT_BrushlessMotor = 3,
 		MOT_CustomMotor = 100,
 	} MOT_MotorTypes;
-	/// \endcond
+/// \endcond
 
 	/// <summary> Values that represent the operating modes. </summary>
 	typedef enum QD_OperatingMode : short
@@ -164,7 +164,8 @@ extern "C"
 		float proportionalGain;
 		/// <summary> The integral gain term, range 0 to 10000. </summary>
 		float integralGain;
-		/// <summary> The differential gain term, range 0 to 10000. </summary>
+		/// <summary> The derivative gain term, range 0 to 10000. </summary>
+		/// <remarks> Kept as differentialGain rather than derivativeGain for backward compatibility</remarks>
 		float differentialGain;
 		/// <summary> The low pass filter cut off frequency, range 0 to 10000. </summary>
 		/// <remarks>Not used by HW version &lt; 3</remarks>
@@ -198,7 +199,8 @@ extern "C"
 		float proportionalGain;
 		/// <summary> The integral gain term, range 0 to 10000. </summary>
 		float integralGain;
-		/// <summary> The differential gain term, range 0 to 10000. </summary>
+		/// <summary> The derivative gain term, range 0 to 10000. </summary>
+		/// <remarks> Kept as differentialGain rather than derivativeGain for backward compatibility</remarks>
 		float differentialGain;
 	} QD_PIDParameters;
 
@@ -493,6 +495,19 @@ extern "C"
 	/// <seealso cref="TLI_GetDeviceListByTypesExt(char *receiveBuffer, DWORD sizeOfBuffer, int * typeIDs, int length)" />
 	KCUBEPOSITIONALIGNER_API short __cdecl TLI_GetDeviceInfo(char const * serialNo, TLI_DeviceInfo *info);
 
+	/// <summary> Initialize a connection to the Simulation Manager, which must already be running. </summary>
+	/// <remarks> Call TLI_InitializeSimulations before TLI_BuildDeviceList at the start of the program to make a connection to the simulation manager.<Br />
+	/// 		  Any devices configured in the simulation manager will become visible TLI_BuildDeviceList is called and can be accessed using TLI_GetDeviceList.<Br />
+	/// 		  Call TLI_InitializeSimulations at the end of the program to release the simulator.  </remarks>
+	/// <seealso cref="TLI_UninitializeSimulations()" />
+	/// <seealso cref="TLI_BuildDeviceList()" />
+	/// <seealso cref="TLI_GetDeviceList(SAFEARRAY** stringsReceiver)" />
+	KCUBEPOSITIONALIGNER_API void __cdecl TLI_InitializeSimulations();
+
+	/// <summary> Uninitialize a connection to the Simulation Manager, which must already be running. </summary>
+	/// <seealso cref="TLI_InitializeSimulations()" />
+	KCUBEPOSITIONALIGNER_API void __cdecl TLI_UninitializeSimulations();
+
 	/// <summary> Open the device for communications. </summary>
 	/// <param name="serialNo">	The serial no of the device to be connected. </param>
 	/// <returns> The error code (see \ref C_DLL_ERRORCODES_page "Error Codes") or zero if successful. </returns>
@@ -511,6 +526,39 @@ extern "C"
 	/// <returns> true if the USB is listed by the ftdi controller</returns>
 	/// \include CodeSnippet_CheckConnection.cpp
 	KCUBEPOSITIONALIGNER_API bool __cdecl QD_CheckConnection(char const * serialNo);
+
+	/// <summary> Determine if the device front panel can be locked. </summary>
+	/// <param name="serialNo">	The device serial no. </param>
+	/// <returns> True if we can lock the device front panel, false if not. </returns>
+	/// <seealso cref="QD_GetFrontPanelLocked(char const * serialNo)" />
+	/// <seealso cref="QD_RequestFrontPanelLocked(char const * serialNo)" />
+	/// <seealso cref="QD_SetFrontPanelLock(char const * serialNo, bool locked)" />
+	KCUBEPOSITIONALIGNER_API bool __cdecl QD_CanDeviceLockFrontPanel(char const * serialNo);
+
+	/// <summary> Query if the device front panel locked. </summary>
+	/// <param name="serialNo">	The device serial no. </param>
+	/// <returns> True if the device front panel is locked, false if not. </returns>
+	/// <seealso cref="QD_CanDeviceLockFrontPanel(char const * serialNo)" />
+	/// <seealso cref="QD_RequestFrontPanelLocked(char const * serialNo)" />
+	/// <seealso cref="QD_SetFrontPanelLock(char const * serialNo, bool locked)" />
+	KCUBEPOSITIONALIGNER_API bool __cdecl  QD_GetFrontPanelLocked(char const * serialNo);
+
+	/// <summary> Ask the device if its front panel is locked. </summary>
+	/// <param name="serialNo">	The device serial no. </param>
+	/// <returns> The error code (see \ref C_DLL_ERRORCODES_page "Error Codes") or zero if successful. </returns>
+	/// <seealso cref="QD_CanDeviceLockFrontPanel(char const * serialNo)" />
+	/// <seealso cref="QD_GetFrontPanelLocked(char const * serialNo)" />
+	/// <seealso cref="QD_SetFrontPanelLock(char const * serialNo, bool locked)" />
+	KCUBEPOSITIONALIGNER_API short __cdecl  QD_RequestFrontPanelLocked(char const * serialNo);
+
+	/// <summary> Sets the device front panel lock state. </summary>
+	/// <param name="serialNo">	The device serial no. </param>
+	/// <param name="locked"> True to lock the device, false to unlock. </param>
+	/// <returns> The error code (see \ref C_DLL_ERRORCODES_page "Error Codes") or zero if successful. </returns>
+	/// <seealso cref="QD_CanDeviceLockFrontPanel(char const * serialNo)" />
+	/// <seealso cref="QD_GetFrontPanelLocked(char const * serialNo)" />
+	/// <seealso cref="QD_RequestFrontPanelLocked(char const * serialNo)" />
+	KCUBEPOSITIONALIGNER_API short __cdecl  QD_SetFrontPanelLock(char const * serialNo, bool locked);
 
 	/// <summary> Sends a command to the device to make it identify iteself. </summary>
 	/// <param name="serialNo">	The device serial no. </param>
@@ -622,11 +670,11 @@ extern "C"
 	/// <returns> The error code (see \ref C_DLL_ERRORCODES_page "Error Codes") or zero if successful. </returns>
 	/// <seealso cref="QD_GetLoopPIDparams(char const *serialNo, QD_LoopParameters *loopParams)" />
 	/// <seealso cref="QD_SetLoopPIDparams(char const *serialNo, QD_LoopParameters *loopParams)" />
-	/// <seealso cref="QD_SetPIDparams(char const *serialNo, QD_PIDParameters *proportionalIntegralDifferentialParams)" />
-	/// <seealso cref="QD_GetPIDparams(char const *serialNo, QD_PIDParameters *proportionalIntegralDifferentialParams)" />
+	/// <seealso cref="QD_SetPIDparams(char const *serialNo, QD_PIDParameters *proportionalIntegralDerivativeParams)" />
+	/// <seealso cref="QD_GetPIDparams(char const *serialNo, QD_PIDParameters *proportionalIntegralDerivativeParams)" />
 	/// <seealso cref="QD_GetLowPassFilterparams(char const *serialNo, QD_LowPassFilterParameters *lowPassParams)" />
 	/// <seealso cref="QD_SetLowPassFilterparams(char const *serialNo, QD_LowPassFilterParameters *lowPassParams)" />
-	/// <seealso cref="QD_SetNotchFilterparams(char const *serialNo, QD_NotchFilterParameters *proportionalIntegralDifferentialParams)" />
+	/// <seealso cref="QD_SetNotchFilterparams(char const *serialNo, QD_NotchFilterParameters *proportionalIntegralDerivativeParams)" />
 	/// <seealso cref="QD_GetNotchFilterparams(char const *serialNo, QD_NotchFilterParameters *notchParams)" />
 	KCUBEPOSITIONALIGNER_API short __cdecl QD_RequestLoopPIDparams(char const *serialNo);
 
@@ -636,11 +684,11 @@ extern "C"
 	/// <param name="loopParams"> Address of the QD_LoopParameters to recieve the Feedback Loop Parameters. </param>
 	/// <returns> The error code (see \ref C_DLL_ERRORCODES_page "Error Codes") or zero if successful. </returns>
 	/// <seealso cref="QD_SetLoopPIDparams(char const *serialNo, QD_LoopParameters *loopParams)" />
-	/// <seealso cref="QD_SetPIDparams(char const *serialNo, QD_PIDParameters *proportionalIntegralDifferentialParams)" />
-	/// <seealso cref="QD_GetPIDparams(char const *serialNo, QD_PIDParameters *proportionalIntegralDifferentialParams)" />
+	/// <seealso cref="QD_SetPIDparams(char const *serialNo, QD_PIDParameters *proportionalIntegralDerivativeParams)" />
+	/// <seealso cref="QD_GetPIDparams(char const *serialNo, QD_PIDParameters *proportionalIntegralDerivativeParams)" />
 	/// <seealso cref="QD_GetLowPassFilterparams(char const *serialNo, QD_LowPassFilterParameters *lowPassParams)" />
 	/// <seealso cref="QD_SetLowPassFilterparams(char const *serialNo, QD_LowPassFilterParameters *lowPassParams)" />
-	/// <seealso cref="QD_SetNotchFilterparams(char const *serialNo, QD_NotchFilterParameters *proportionalIntegralDifferentialParams)" />
+	/// <seealso cref="QD_SetNotchFilterparams(char const *serialNo, QD_NotchFilterParameters *proportionalIntegralDerivativeParams)" />
 	/// <seealso cref="QD_GetNotchFilterparams(char const *serialNo, QD_NotchFilterParameters *notchParams)" />
 	/// <seealso cref="QD_RequestLoopPIDparams(char const *serialNo)" />
 	KCUBEPOSITIONALIGNER_API short __cdecl QD_GetLoopPIDparams(char const *serialNo, QD_LoopParameters *loopParams);
@@ -651,42 +699,42 @@ extern "C"
 	/// <param name="loopParams"> Address of the QD_LoopParameters containing the new Feedback Loop Parameters. </param>
 	/// <returns> The error code (see \ref C_DLL_ERRORCODES_page "Error Codes") or zero if successful. </returns>
 	/// <seealso cref="QD_GetLoopPIDparams(char const *serialNo, QD_LoopParameters *loopParams)" />
-	/// <seealso cref="QD_SetPIDparams(char const *serialNo, QD_PIDParameters *proportionalIntegralDifferentialParams)" />
-	/// <seealso cref="QD_GetPIDparams(char const *serialNo, QD_PIDParameters *proportionalIntegralDifferentialParams)" />
+	/// <seealso cref="QD_SetPIDparams(char const *serialNo, QD_PIDParameters *proportionalIntegralDerivativeParams)" />
+	/// <seealso cref="QD_GetPIDparams(char const *serialNo, QD_PIDParameters *proportionalIntegralDerivativeParams)" />
 	/// <seealso cref="QD_GetLowPassFilterparams(char const *serialNo, QD_LowPassFilterParameters *lowPassParams)" />
 	/// <seealso cref="QD_SetLowPassFilterparams(char const *serialNo, QD_LowPassFilterParameters *lowPassParams)" />
-	/// <seealso cref="QD_SetNotchFilterparams(char const *serialNo, QD_NotchFilterParameters *proportionalIntegralDifferentialParams)" />
+	/// <seealso cref="QD_SetNotchFilterparams(char const *serialNo, QD_NotchFilterParameters *proportionalIntegralDerivativeParams)" />
 	/// <seealso cref="QD_GetNotchFilterparams(char const *serialNo, QD_NotchFilterParameters *notchParams)" />
 	/// <seealso cref="QD_RequestLoopPIDparams(char const *serialNo)" />
 	KCUBEPOSITIONALIGNER_API short __cdecl QD_SetLoopPIDparams(char const *serialNo, QD_LoopParameters *loopParams);
 
 	/// <summary> Gets the feedback loop parameters. </summary>
 	/// <param name="serialNo"> The device serial no. </param>
-	/// <param name="proportionalIntegralDifferentialParams"> Address of the QD_PIDParameters to recieve the Feedback Loop Parameters. </param>
+	/// <param name="proportionalIntegralDerivativeParams"> Address of the QD_PIDParameters to recieve the Feedback Loop Parameters. </param>
 	/// <returns> The error code (see \ref C_DLL_ERRORCODES_page "Error Codes") or zero if successful. </returns>
-	/// <seealso cref="QD_SetPIDparams(char const *serialNo, QD_PIDParameters *proportionalIntegralDifferentialParams)" />
+	/// <seealso cref="QD_SetPIDparams(char const *serialNo, QD_PIDParameters *proportionalIntegralDerivativeParams)" />
 	/// <seealso cref="QD_SetLoopPIDparams(char const *serialNo, QD_LoopParameters *loopParams)" />
 	/// <seealso cref="QD_GetLoopPIDparams(char const *serialNo, QD_LoopParameters *loopParams)" />
 	/// <seealso cref="QD_GetLowPassFilterparams(char const *serialNo, QD_LowPassFilterParameters *lowPassParams)" />
 	/// <seealso cref="QD_SetLowPassFilterparams(char const *serialNo, QD_LowPassFilterParameters *lowPassParams)" />
-	/// <seealso cref="QD_SetNotchFilterparams(char const *serialNo, QD_NotchFilterParameters *proportionalIntegralDifferentialParams)" />
+	/// <seealso cref="QD_SetNotchFilterparams(char const *serialNo, QD_NotchFilterParameters *proportionalIntegralDerivativeParams)" />
 	/// <seealso cref="QD_GetNotchFilterparams(char const *serialNo, QD_NotchFilterParameters *notchParams)" />
 	/// <seealso cref="QD_RequestLoopPIDparams(char const *serialNo)" />
-	KCUBEPOSITIONALIGNER_API short __cdecl QD_GetPIDparams(char const *serialNo, QD_PIDParameters *proportionalIntegralDifferentialParams);
+	KCUBEPOSITIONALIGNER_API short __cdecl QD_GetPIDparams(char const *serialNo, QD_PIDParameters *proportionalIntegralDerivativeParams);
 
 	/// <summary> Sets the feedback loop parameters. </summary>
 	/// <param name="serialNo"> The device serial no. </param>
-	/// <param name="proportionalIntegralDifferentialParams"> Address of the QD_PIDParameters containing the new Feedback Loop Parameters. </param>
+	/// <param name="proportionalIntegralDerivativeParams"> Address of the QD_PIDParameters containing the new Feedback Loop Parameters. </param>
 	/// <returns> The error code (see \ref C_DLL_ERRORCODES_page "Error Codes") or zero if successful. </returns>
-	/// <seealso cref="QD_GetPIDparams(char const *serialNo, QD_PIDParameters *proportionalIntegralDifferentialParams)" />
+	/// <seealso cref="QD_GetPIDparams(char const *serialNo, QD_PIDParameters *proportionalIntegralDerivativeParams)" />
 	/// <seealso cref="QD_GetLoopPIDparams(char const *serialNo, QD_LoopParameters *loopParams)" />
 	/// <seealso cref="QD_SetLoopPIDparams(char const *serialNo, QD_LoopParameters *loopParams)" />
 	/// <seealso cref="QD_GetLowPassFilterparams(char const *serialNo, QD_LowPassFilterParameters *lowPassParams)" />
 	/// <seealso cref="QD_SetLowPassFilterparams(char const *serialNo, QD_LowPassFilterParameters *lowPassParams)" />
-	/// <seealso cref="QD_SetNotchFilterparams(char const *serialNo, QD_NotchFilterParameters *proportionalIntegralDifferentialParams)" />
+	/// <seealso cref="QD_SetNotchFilterparams(char const *serialNo, QD_NotchFilterParameters *proportionalIntegralDerivativeParams)" />
 	/// <seealso cref="QD_GetNotchFilterparams(char const *serialNo, QD_NotchFilterParameters *notchParams)" />
 	/// <seealso cref="QD_RequestLoopPIDparams(char const *serialNo)" />
-	KCUBEPOSITIONALIGNER_API short __cdecl QD_SetPIDparams(char const *serialNo, QD_PIDParameters *proportionalIntegralDifferentialParams);
+	KCUBEPOSITIONALIGNER_API short __cdecl QD_SetPIDparams(char const *serialNo, QD_PIDParameters *proportionalIntegralDerivativeParams);
 
 	/// <summary> Gets the low pass filter parameters. </summary>
 	/// <remarks> NOTE This feature was added to the TPA101 device, hardware version &gt;= 3</remarks>
@@ -694,12 +742,12 @@ extern "C"
 	/// <param name="lowPassParams"> Address of the QD_LowPassFilterParameters to receive the Low Pass Filter Parameters. </param>
 	/// <returns> The error code (see \ref C_DLL_ERRORCODES_page "Error Codes") or zero if successful. </returns>
 	/// <seealso cref="QD_SetLowPassFilterparams(char const *serialNo, QD_LowPassFilterParameters *lowPassParams)" />
-	/// <seealso cref="QD_SetNotchFilterparams(char const *serialNo, QD_NotchFilterParameters *proportionalIntegralDifferentialParams)" />
+	/// <seealso cref="QD_SetNotchFilterparams(char const *serialNo, QD_NotchFilterParameters *proportionalIntegralDerivativeParams)" />
 	/// <seealso cref="QD_GetNotchFilterparams(char const *serialNo, QD_NotchFilterParameters *notchParams)" />
 	/// <seealso cref="QD_GetLoopPIDparams(char const *serialNo, QD_LoopParameters *loopParams)" />
 	/// <seealso cref="QD_SetLoopPIDparams(char const *serialNo, QD_LoopParameters *loopParams)" />
-	/// <seealso cref="QD_SetPIDparams(char const *serialNo, QD_PIDParameters *proportionalIntegralDifferentialParams)" />
-	/// <seealso cref="QD_GetPIDparams(char const *serialNo, QD_PIDParameters *proportionalIntegralDifferentialParams)" />
+	/// <seealso cref="QD_SetPIDparams(char const *serialNo, QD_PIDParameters *proportionalIntegralDerivativeParams)" />
+	/// <seealso cref="QD_GetPIDparams(char const *serialNo, QD_PIDParameters *proportionalIntegralDerivativeParams)" />
 	/// <seealso cref="QD_RequestLoopPIDparams(char const *serialNo)" />
 	KCUBEPOSITIONALIGNER_API short __cdecl QD_GetLowPassFilterparams(char const *serialNo, QD_LowPassFilterParameters *lowPassParams);
 
@@ -709,12 +757,12 @@ extern "C"
 	/// <param name="lowPassParams"> Address of the QD_LowPassFilterParameters containing the new Feedback Low Pass Filter Parameters. </param>
 	/// <returns> The error code (see \ref C_DLL_ERRORCODES_page "Error Codes") or zero if successful. </returns>
 	/// <seealso cref="QD_GetLowPassFilterparams(char const *serialNo, QD_LowPassFilterParameters *lowPassParams)" />
-	/// <seealso cref="QD_SetNotchFilterparams(char const *serialNo, QD_NotchFilterParameters *proportionalIntegralDifferentialParams)" />
+	/// <seealso cref="QD_SetNotchFilterparams(char const *serialNo, QD_NotchFilterParameters *proportionalIntegralDerivativeParams)" />
 	/// <seealso cref="QD_GetNotchFilterparams(char const *serialNo, QD_NotchFilterParameters *notchParams)" />
 	/// <seealso cref="QD_GetLoopPIDparams(char const *serialNo, QD_LoopParameters *loopParams)" />
 	/// <seealso cref="QD_SetLoopPIDparams(char const *serialNo, QD_LoopParameters *loopParams)" />
-	/// <seealso cref="QD_SetPIDparams(char const *serialNo, QD_PIDParameters *proportionalIntegralDifferentialParams)" />
-	/// <seealso cref="QD_GetPIDparams(char const *serialNo, QD_PIDParameters *proportionalIntegralDifferentialParams)" />
+	/// <seealso cref="QD_SetPIDparams(char const *serialNo, QD_PIDParameters *proportionalIntegralDerivativeParams)" />
+	/// <seealso cref="QD_GetPIDparams(char const *serialNo, QD_PIDParameters *proportionalIntegralDerivativeParams)" />
 	/// <seealso cref="QD_RequestLoopPIDparams(char const *serialNo)" />
 	KCUBEPOSITIONALIGNER_API short __cdecl QD_SetLowPassFilterparams(char const *serialNo, QD_LowPassFilterParameters *lowPassParams);
 
@@ -723,30 +771,30 @@ extern "C"
 	/// <param name="serialNo"> The device serial no. </param>
 	/// <param name="notchParams"> Address of the QD_NotchFilterParameters to receive the Notch Filter Parameters. </param>
 	/// <returns> The error code (see \ref C_DLL_ERRORCODES_page "Error Codes") or zero if successful. </returns>
-	/// <seealso cref="QD_SetNotchFilterparams(char const *serialNo, QD_NotchFilterParameters *proportionalIntegralDifferentialParams)" />
+	/// <seealso cref="QD_SetNotchFilterparams(char const *serialNo, QD_NotchFilterParameters *proportionalIntegralDerivativeParams)" />
 	/// <seealso cref="QD_GetLowPassFilterparams(char const *serialNo, QD_LowPassFilterParameters *lowPassParams)" />
 	/// <seealso cref="QD_SetLowPassFilterparams(char const *serialNo, QD_LowPassFilterParameters *lowPassParams)" />
 	/// <seealso cref="QD_GetLoopPIDparams(char const *serialNo, QD_LoopParameters *loopParams)" />
 	/// <seealso cref="QD_SetLoopPIDparams(char const *serialNo, QD_LoopParameters *loopParams)" />
-	/// <seealso cref="QD_SetPIDparams(char const *serialNo, QD_PIDParameters *proportionalIntegralDifferentialParams)" />
-	/// <seealso cref="QD_GetPIDparams(char const *serialNo, QD_PIDParameters *proportionalIntegralDifferentialParams)" />
+	/// <seealso cref="QD_SetPIDparams(char const *serialNo, QD_PIDParameters *proportionalIntegralDerivativeParams)" />
+	/// <seealso cref="QD_GetPIDparams(char const *serialNo, QD_PIDParameters *proportionalIntegralDerivativeParams)" />
 	/// <seealso cref="QD_RequestLoopPIDparams(char const *serialNo)" />
 	KCUBEPOSITIONALIGNER_API short __cdecl QD_GetNotchFilterparams(char const *serialNo, QD_NotchFilterParameters *notchParams);
 
 	/// <summary> Sets the notch filter parameters. </summary>
 	/// <remarks> NOTE This feature was added to the TPA101 device, hardware version &gt;= 3</remarks>
 	/// <param name="serialNo"> The device serial no. </param>
-	/// <param name="proportionalIntegralDifferentialParams"> Address of the QD_NotchFilterParameters containing the new Feedback Notch Filter Parameters. </param>
+	/// <param name="proportionalIntegralDerivativeParams"> Address of the QD_NotchFilterParameters containing the new Feedback Notch Filter Parameters. </param>
 	/// <returns> The error code (see \ref C_DLL_ERRORCODES_page "Error Codes") or zero if successful. </returns>
 	/// <seealso cref="QD_GetNotchFilterparams(char const *serialNo, QD_NotchFilterParameters *notchParams)" />
 	/// <seealso cref="QD_GetLowPassFilterparams(char const *serialNo, QD_LowPassFilterParameters *lowPassParams)" />
 	/// <seealso cref="QD_SetLowPassFilterparams(char const *serialNo, QD_LowPassFilterParameters *lowPassParams)" />
 	/// <seealso cref="QD_GetLoopPIDparams(char const *serialNo, QD_LoopParameters *loopParams)" />
 	/// <seealso cref="QD_SetLoopPIDparams(char const *serialNo, QD_LoopParameters *loopParams)" />
-	/// <seealso cref="QD_SetPIDparams(char const *serialNo, QD_PIDParameters *proportionalIntegralDifferentialParams)" />
-	/// <seealso cref="QD_GetPIDparams(char const *serialNo, QD_PIDParameters *proportionalIntegralDifferentialParams)" />
+	/// <seealso cref="QD_SetPIDparams(char const *serialNo, QD_PIDParameters *proportionalIntegralDerivativeParams)" />
+	/// <seealso cref="QD_GetPIDparams(char const *serialNo, QD_PIDParameters *proportionalIntegralDerivativeParams)" />
 	/// <seealso cref="QD_RequestLoopPIDparams(char const *serialNo)" />
-	KCUBEPOSITIONALIGNER_API short __cdecl QD_SetNotchFilterparams(char const *serialNo, QD_NotchFilterParameters *proportionalIntegralDifferentialParams);
+	KCUBEPOSITIONALIGNER_API short __cdecl QD_SetNotchFilterparams(char const *serialNo, QD_NotchFilterParameters *proportionalIntegralDerivativeParams);
 
 	/// <summary> Requests the position demand output parameters. </summary>
 	/// <param name="serialNo"> The device serial no. </param>
@@ -821,7 +869,7 @@ extern "C"
 	/// <summary> Requests the operating mode. </summary>
 	/// <param name="serialNo">	The device serial no. </param>
 	/// <returns> The error code (see \ref C_DLL_ERRORCODES_page "Error Codes") or zero if successful. </returns>
-	/// <seealso cref="QD_SetOperatingMode(char const * serialNo, QD_OperatingMode mode)" />
+	/// <seealso cref="QD_SetOperatingMode(char const * serialNo, QD_OperatingMode mode, bool autoOpenCloseLoop)" />
 	/// <seealso cref="QD_GetOperatingMode(char const * serialNo)" />
 	KCUBEPOSITIONALIGNER_API short __cdecl QD_RequestOperatingMode(char const * serialNo);
 
@@ -833,7 +881,7 @@ extern "C"
 	///				<item><term>Open Loop Mode</term><term>2</term></item>
 	///				<item><term>Closed Loop Mode</term><term>3</term></item>
 	/// 		  </list> </returns>
-	/// <seealso cref="QD_SetOperatingMode(char const * serialNo, QD_OperatingMode mode)" />
+	/// <seealso cref="QD_SetOperatingMode(char const * serialNo, QD_OperatingMode mode, bool autoOpenCloseLoop)" />
 	/// <seealso cref="QD_RequestOperatingMode(char const * serialNo)" />
 	KCUBEPOSITIONALIGNER_API QD_OperatingMode __cdecl QD_GetOperatingMode(char const * serialNo);
 
@@ -845,23 +893,25 @@ extern "C"
 	///				<item><term>Open Loop Mode</term><term>2</term></item>
 	///				<item><term>Closed Loop Mode</term><term>3</term></item>
 	/// 		  </list>  </param>
+	/// <param name="autoOpenCloseLoop">A flag that if set will allow the KPA101 to automatically switch to Open Loop mode
+	/// 								if it detects that the beam is blocked</param>
 	/// <returns> The error code (see \ref C_DLL_ERRORCODES_page "Error Codes") or zero if successful. </returns>
 	/// <seealso cref="QD_GetOperatingMode(char const * serialNo)" />
 	/// <seealso cref="QD_RequestOperatingMode(char const * serialNo)" />
-	KCUBEPOSITIONALIGNER_API short __cdecl QD_SetOperatingMode(char const * serialNo, QD_OperatingMode mode);
+	KCUBEPOSITIONALIGNER_API short __cdecl QD_SetOperatingMode(char const * serialNo, QD_OperatingMode mode, bool autoOpenCloseLoop);
 
 	/// <summary> Requests the LED brightness. </summary>
 	/// <param name="serialNo">	The device serial no. </param>
 	/// <returns> The error code (see \ref C_DLL_ERRORCODES_page "Error Codes") or zero if successful. </returns>
 	/// <seealso cref="QD_GetLEDBrightness(char const * serialNo)" />
 	/// <seealso cref="QD_SetLEDBrightness(char const * serialNo, short brightness)" />
-	KCUBEPOSITIONALIGNER_API short __cdecl QD_RequestsLEDBrightness(char const * serialNo);
+	KCUBEPOSITIONALIGNER_API short __cdecl QD_RequestLEDBrightness(char const * serialNo);
 
 	/// <summary> Gets the LED brightness. </summary>
 	/// <param name="serialNo">	The device serial no. </param>
 	/// <returns> Intensity from 0 (off) to 255. </returns>
 	/// <seealso cref="QD_SetLEDBrightness(char const * serialNo, short brightness)" />
-	/// <seealso cref="QD_RequestsLEDBrightness(char const * serialNo)" />
+	/// <seealso cref="QD_RequestLEDBrightness(char const * serialNo)" />
 	KCUBEPOSITIONALIGNER_API WORD __cdecl QD_GetLEDBrightness(char const * serialNo);
 
 	/// <summary> Sets the LED brightness. </summary>
@@ -869,7 +919,7 @@ extern "C"
 	/// <param name="brightness"> Intensity from 0 (off) to 255. </param>
 	/// <returns> The error code (see \ref C_DLL_ERRORCODES_page "Error Codes") or zero if successful. </returns>
 	/// <seealso cref="QD_GetLEDBrightness(char const * serialNo)" />
-	/// <seealso cref="QD_RequestsLEDBrightness(char const * serialNo)" />
+	/// <seealso cref="QD_RequestLEDBrightness(char const * serialNo)" />
 	KCUBEPOSITIONALIGNER_API short __cdecl QD_SetLEDBrightness(char const * serialNo, short brightness);
 
 	/// <summary> Gets position demand output. </summary>

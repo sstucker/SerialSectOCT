@@ -139,7 +139,7 @@ extern "C"
 		Forwards = 0x01,///< Only rotate in a forward direction
 		Reverse = 0x02,///< Only rotate in a backward direction
 	} MOT_MovementDirections;
-	/// \endcond
+/// \endcond
 
 #pragma pack(1)
 	
@@ -385,8 +385,9 @@ extern "C"
 	/// <returns> <c>true</c> if the device can home. </returns>
 	MODULARRACK_API bool __cdecl SBC_CanHome(char const * serialNo, short channel);
 
+	/// \deprecated
 	/// <summary> Does the device need to be Homed before a move can be performed. </summary>
-	/// <remarks> @deprecated superceded by <see cref="SBC_CanMoveWithoutHomingFirst(char const * serialNo, short channel)"/> </remarks>
+	/// <remarks> superceded by <see cref="SBC_CanMoveWithoutHomingFirst(char const * serialNo, short channel)"/> </remarks>
 	/// <param name="serialNo"> The controller serial no. </param>
 	/// <param name="channel">  The channel (1 or 2). </param>
 	/// <returns> <c>true</c> if the device needs homing. </returns>
@@ -645,6 +646,7 @@ extern "C"
 	/// <param name="serialNo">	The controller serial no. </param>
 	/// <param name="channel">  The channel (1 or 2). </param>
 	/// <param name="reverse"> if  <c>true</c> then directions will be swapped on these moves. </param>
+	/// <returns> The error code (see \ref C_DLL_ERRORCODES_page "Error Codes") or zero if successful. </returns>
 	MODULARRACK_API short __cdecl SBC_SetDirection(char const * serialNo, short channel, bool reverse);
 
 	/// <summary> Stop the current move immediately (with risk of losing track of position). </summary>
@@ -779,9 +781,8 @@ extern "C"
 	/// <param name="channel"> The channel (1 or 2). </param>
 	/// <returns>	The software limits mode <list type=table>
 	///							<item><term> Disable any move outside travel range. </term><term>0</term></item>
-	///							<item><term> Disable any move outside travel range, but allow moves 'just beyond limit' to be truncated to limit. </term><term>1</term></item>
-	///							<item><term> Truncate all moves beyond limit to the current limit. </term><term>2</term></item>
-	///							<item><term> Allow all moves, illegal or not. </term><term>3</term></item>
+	///							<item><term> Truncate all moves beyond limit to the current limit. </term><term>1</term></item>
+	///							<item><term> Allow all moves, illegal or not. </term><term>2</term></item>
 	/// 		  </list>. </returns>
 	/// <returns> The software limits mode. </returns>
 	/// <seealso cref="SBC_SetLimitsSoftwareApproachPolicy(const char * serialNo, MOT_LimitsSoftwareApproachPolicy limitsSoftwareApproachPolicy)" />
@@ -793,10 +794,9 @@ extern "C"
 	/// <param name="limitsSoftwareApproachPolicy"> The soft limit mode
 	/// 					 <list type=table>
 	///							<item><term> Disable any move outside travel range. </term><term>0</term></item>
-	///							<item><term> Disable any move outside travel range, but allow moves 'just beyond limit' to be truncated to limit. </term><term>1</term></item>
-	///							<item><term> Truncate all moves beyond limit to the current limit. </term><term>2</term></item>
-	///							<item><term> Allow all moves, illegal or not. </term><term>3</term></item>
-	/// 					 </list> <remarks> If these are bitwise-ORed with 0x0080 then the limits are swapped. </remarks> </param>
+	///							<item><term> Truncate all moves beyond limit to the current limit. </term><term>1</term></item>
+	///							<item><term> Allow all moves, illegal or not. </term><term>2</term></item>
+	/// 					 </list> </param>
 	/// <seealso cref="SBC_GetSoftLimitMode(const char * serialNo)" />
 	MODULARRACK_API void __cdecl SBC_SetLimitsSoftwareApproachPolicy(char const * serialNo, short channel, MOT_LimitsSoftwareApproachPolicy limitsSoftwareApproachPolicy);
 
@@ -1270,8 +1270,9 @@ extern "C"
 	/// <seealso cref="SBC_SetMotorTravelMode(char const * serialNo, short channel, int travelMode)" />
 	MODULARRACK_API MOT_TravelModes __cdecl SBC_GetMotorTravelMode(char const * serialNo, short channel);
 
+	/// \deprecated
 	/// <summary> Sets the motor stage parameters. </summary>
-	/// <remarks> @deprecated superceded by <see cref="SBC_SetMotorParamsExt(char const * serialNo, short channel, double stepsPerRevolution, double gearboxRatio, double pitch)"/> </remarks>
+	/// <remarks> superceded by <see cref="SBC_SetMotorParamsExt(char const * serialNo, short channel, double stepsPerRevolution, double gearboxRatio, double pitch)"/> </remarks>
 	/// <remarks> These parameters, when combined define the stage motion in terms of \ref RealWorldUnits_page. (mm or degrees)<br />
 	/// 		  The real world unit is defined from stepsPerRev * gearBoxRatio / pitch.</remarks>
 	/// <param name="serialNo"> The controller serial no. </param>
@@ -1283,8 +1284,9 @@ extern "C"
 	/// <seealso cref="SBC_GetMotorParams(char const * serialNo, short channel, long *stepsPerRev, long *gearBoxRatio, float *pitch)" />
 	MODULARRACK_API short __cdecl SBC_SetMotorParams(char const * serialNo, short channel, long stepsPerRev, long gearBoxRatio, float pitch);
 
+	/// \deprecated
 	/// <summary> Sets the motor stage parameters. </summary>
-	/// <remarks> @deprecated superceded by <see cref="SBC_GetMotorParamsExt(char const * serialNo, short channel, double *stepsPerRevolution, double *gearboxRatio, double *pitch)"/> </remarks>
+	/// <remarks> superceded by <see cref="SBC_GetMotorParamsExt(char const * serialNo, short channel, double *stepsPerRevolution, double *gearboxRatio, double *pitch)"/> </remarks>
 	/// <remarks> These parameters, when combined define the stage motion in terms of \ref RealWorldUnits_page. (mm or degrees)<br />
 	/// 		  The real world unit is defined from stepsPerRev * gearBoxRatio / pitch.</remarks>
 	/// <param name="serialNo"> The controller serial no. </param>
@@ -1382,7 +1384,7 @@ extern "C"
 	/// <seealso cref="SBC_SetMotorTravelLimits(char const * serialNo, short channel, double minPosition, double maxPosition)" />
 	MODULARRACK_API short __cdecl SBC_GetMotorTravelLimits(char const * serialNo, short channel, double *minPosition, double *maxPosition);
 
-	/// <summary>	Converts a devic unit to a real worl unit. </summary>
+	/// <summary>	Converts a device unit to a real world unit. </summary>
 	/// <param name="serialNo">   	The serial no. </param>
 	/// <param name="device_unit">	The device unit. </param>
 	/// <param name="channel">		 The channel. </param>
@@ -1396,7 +1398,7 @@ extern "C"
 	/// <seealso cref="SBC_GetDeviceUnitFromRealValue(char const * serialNo, short channel, double real_unit, int *device_unit, int unitType)" />
 	MODULARRACK_API short __cdecl SBC_GetRealValueFromDeviceUnit(char const * serialNo, short channel, int device_unit, double *real_unit, int unitType);
 
-	/// <summary>	Converts a devic unit to a real worl unit. </summary>
+	/// <summary>	Converts a device unit to a real world unit. </summary>
 	/// <param name="serialNo">   	The serial no. </param>
 	/// <param name="channel">		 The channel. </param>
 	/// <param name="device_unit">	The device unit. </param>

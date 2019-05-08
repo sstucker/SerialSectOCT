@@ -33,7 +33,7 @@
  */
 extern "C"
 {
-	/// \cond NOT_MASTER
+/// \cond NOT_MASTER
 
 	/// <summary> Values that represent FT_Status. </summary>
 	typedef enum FT_Status : short
@@ -204,7 +204,7 @@ extern "C"
 	} TST_Stages;
 
 
-	/// \endcond
+/// \endcond
 
 	/// <summary> Information about the device generated from serial number. </summary>
 	#pragma pack(1)
@@ -568,6 +568,19 @@ extern "C"
 	/// <seealso cref="TLI_GetDeviceListByTypesExt(char *receiveBuffer, DWORD sizeOfBuffer, int * typeIDs, int length)" />
 	TCUBESTEPPER_API short __cdecl TLI_GetDeviceInfo(char const * serialNo, TLI_DeviceInfo *info);
 
+	/// <summary> Initialize a connection to the Simulation Manager, which must already be running. </summary>
+	/// <remarks> Call TLI_InitializeSimulations before TLI_BuildDeviceList at the start of the program to make a connection to the simulation manager.<Br />
+	/// 		  Any devices configured in the simulation manager will become visible TLI_BuildDeviceList is called and can be accessed using TLI_GetDeviceList.<Br />
+	/// 		  Call TLI_InitializeSimulations at the end of the program to release the simulator.  </remarks>
+	/// <seealso cref="TLI_UninitializeSimulations()" />
+	/// <seealso cref="TLI_BuildDeviceList()" />
+	/// <seealso cref="TLI_GetDeviceList(SAFEARRAY** stringsReceiver)" />
+	TCUBESTEPPER_API void __cdecl TLI_InitializeSimulations();
+
+	/// <summary> Uninitialize a connection to the Simulation Manager, which must already be running. </summary>
+	/// <seealso cref="TLI_InitializeSimulations()" />
+	TCUBESTEPPER_API void __cdecl TLI_UninitializeSimulations();
+
 	/// <summary> Open the device for communications. </summary>
 	/// <param name="serialNo">	The serial no of the device to be connected. </param>
 	/// <returns> The error code (see \ref C_DLL_ERRORCODES_page "Error Codes") or zero if successful. </returns>
@@ -787,8 +800,9 @@ extern "C"
 	/// <returns> <c>true</c> if the device can home. </returns>
 	TCUBESTEPPER_API bool __cdecl SCC_CanHome(char const * serialNo);
 
+	/// \deprecated
 	/// <summary> Does the device need to be Homed before a move can be performed. </summary>
-	/// <remarks> @deprecated superceded by <see cref="SCC_CanMoveWithoutHomingFirst(char const * serialNo)"/> </remarks>
+	/// <remarks> superceded by <see cref="SCC_CanMoveWithoutHomingFirst(char const * serialNo)"/> </remarks>
 	/// <param name="serialNo"> The serial no. </param>
 	/// <returns> <c>true</c> if the device needs homing. </returns>
 	TCUBESTEPPER_API bool __cdecl SCC_NeedsHoming(char const * serialNo);
@@ -1105,6 +1119,7 @@ extern "C"
 	/// 		  This parameter will tell the system to reverse the direction sense whnd moving, jogging etc. </remarks>
 	/// <param name="serialNo">	The device serial no. </param>
 	/// <param name="reverse"> if  <c>true</c> then directions will be swapped on these moves. </param>
+	/// <returns> The error code (see \ref C_DLL_ERRORCODES_page "Error Codes") or zero if successful. </returns>
 	TCUBESTEPPER_API void __cdecl SCC_SetDirection(char const * serialNo, bool reverse);
 
 	/// <summary> Stop the current move immediately (with risk of losing track of position). </summary>
@@ -1258,9 +1273,8 @@ extern "C"
 	/// <param name="serialNo">	The device serial no. </param>
 	/// <returns>	The software limits mode <list type=table>
 	///							<item><term> Disable any move outside travel range. </term><term>0</term></item>
-	///							<item><term> Disable any move outside travel range, but allow moves 'just beyond limit' to be truncated to limit. </term><term>1</term></item>
-	///							<item><term> Truncate all moves beyond limit to the current limit. </term><term>2</term></item>
-	///							<item><term> Allow all moves, illegal or not. </term><term>3</term></item>
+	///							<item><term> Truncate all moves beyond limit to the current limit. </term><term>1</term></item>
+	///							<item><term> Allow all moves, illegal or not. </term><term>2</term></item>
 	/// 		  </list>. </returns>
 	/// <returns> The software limits mode. </returns>
 	/// <seealso cref="SCC_SetLimitsSoftwareApproachPolicy(const char * serialNo, MOT_LimitsSoftwareApproachPolicy limitsSoftwareApproachPolicy)" />
@@ -1271,10 +1285,9 @@ extern "C"
 	/// <param name="limitsSoftwareApproachPolicy"> The soft limit mode
 	/// 					 <list type=table>
 	///							<item><term> Disable any move outside travel range. </term><term>0</term></item>
-	///							<item><term> Disable any move outside travel range, but allow moves 'just beyond limit' to be truncated to limit. </term><term>1</term></item>
-	///							<item><term> Truncate all moves beyond limit to the current limit. </term><term>2</term></item>
-	///							<item><term> Allow all moves, illegal or not. </term><term>3</term></item>
-	/// 					 </list> <remarks> If these are bitwise-ORed with 0x0080 then the limits are swapped. </remarks> </param>
+	///							<item><term> Truncate all moves beyond limit to the current limit. </term><term>1</term></item>
+	///							<item><term> Allow all moves, illegal or not. </term><term>2</term></item>
+	/// 					 </list> </param>
 	/// <seealso cref="SCC_GetSoftLimitMode(const char * serialNo)" />
 	TCUBESTEPPER_API void __cdecl SCC_SetLimitsSoftwareApproachPolicy(char const * serialNo, MOT_LimitsSoftwareApproachPolicy limitsSoftwareApproachPolicy);
 
@@ -1780,8 +1793,9 @@ extern "C"
 	/// <seealso cref="SCC_SetMotorTravelMode(char const * serialNo, int travelMode)" />
 	TCUBESTEPPER_API MOT_TravelModes __cdecl SCC_GetMotorTravelMode(char const * serialNo);
 
+	/// \deprecated
 	/// <summary> Sets the motor stage parameters. </summary>
-	/// <remarks> @deprecated superceded by <see cref="SCC_SetMotorParamsExt(char const * serialNo, double stepsPerRevolution, double gearboxRatio, double pitch)"/> </remarks>
+	/// <remarks> superceded by <see cref="SCC_SetMotorParamsExt(char const * serialNo, double stepsPerRevolution, double gearboxRatio, double pitch)"/> </remarks>
 	/// <remarks> These parameters, when combined define the stage motion in terms of \ref RealWorldUnits_page. (mm or degrees)<br />
 	/// 		  The real world unit is defined from stepsPerRev * gearBoxRatio / pitch.</remarks>
 	/// <param name="serialNo"> The device serial no. </param>
@@ -1792,8 +1806,9 @@ extern "C"
 	/// <seealso cref="SCC_GetMotorParams(char const * serialNo, long *stepsPerRev, long *gearBoxRatio, float *pitch)" />
 	TCUBESTEPPER_API short __cdecl SCC_SetMotorParams(char const * serialNo, long stepsPerRev, long gearBoxRatio, float pitch);
 
+	/// \deprecated
 	/// <summary> Gets the motor stage parameters. </summary>
-	/// <remarks> @deprecated superceded by <see cref="SCC_GetMotorParamsExt(char const * serialNo, double *stepsPerRevolution, double *gearboxRatio, double *pitch)"/> </remarks>
+	/// <remarks> superceded by <see cref="SCC_GetMotorParamsExt(char const * serialNo, double *stepsPerRevolution, double *gearboxRatio, double *pitch)"/> </remarks>
 	/// <remarks> These parameters, when combined define the stage motion in terms of \ref RealWorldUnits_page. (mm or degrees)<br />
 	/// 		  The real world unit is defined from stepsPerRev * gearBoxRatio / pitch.</remarks>
 	/// <param name="serialNo"> The device serial no. </param>
@@ -1882,7 +1897,7 @@ extern "C"
 	/// <seealso cref="SCC_SetMotorTravelLimits(char const * serialNo, double minPosition, double maxPosition)" />
 	TCUBESTEPPER_API short __cdecl SCC_GetMotorTravelLimits(char const * serialNo, double *minPosition, double *maxPosition);
 
-	/// <summary>	Converts a devic unit to a real worl unit. </summary>
+	/// <summary>	Converts a device unit to a real world unit. </summary>
 	/// <param name="serialNo">   	The serial no. </param>
 	/// <param name="device_unit">	The device unit. </param>
 	/// <param name="real_unit">  	The real unit. </param>
@@ -1895,7 +1910,7 @@ extern "C"
 	/// <seealso cref="SCC_GetDeviceUnitFromRealValue(char const * serialNo, double real_unit, int *device_unit, int unitType)" />
 	TCUBESTEPPER_API short __cdecl SCC_GetRealValueFromDeviceUnit(char const * serialNo, int device_unit, double *real_unit, int unitType);
 
-	/// <summary>	Converts a devic unit to a real worl unit. </summary>
+	/// <summary>	Converts a device unit to a real world unit. </summary>
 	/// <param name="serialNo">   	The serial no. </param>
 	/// <param name="device_unit">	The device unit. </param>
 	/// <param name="real_unit">  	The real unit. </param>

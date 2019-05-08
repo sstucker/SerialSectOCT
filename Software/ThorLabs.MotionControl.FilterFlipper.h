@@ -33,7 +33,7 @@
 
 extern "C"
 {
-	/// \cond NOT_MASTER
+/// \cond NOT_MASTER
 
 	/// <summary> Values that represent FT_Status. </summary>
 	typedef enum FT_Status : short
@@ -67,7 +67,7 @@ extern "C"
 		Position2 = 0x02,///<Position 2
 	} FF_Positions;
 
-	/// \endcond
+/// \endcond
 
 	/// <summary> Information about the device generated from serial number. </summary>
 	#pragma pack(1)
@@ -350,6 +350,19 @@ extern "C"
 	/// <seealso cref="TLI_GetDeviceListByTypesExt(char *receiveBuffer, DWORD sizeOfBuffer, int * typeIDs, int length)" />
 	FILTERFLIPPERDLL_API short __cdecl TLI_GetDeviceInfo(char const * serialNo, TLI_DeviceInfo *info);
 
+	/// <summary> Initialize a connection to the Simulation Manager, which must already be running. </summary>
+	/// <remarks> Call TLI_InitializeSimulations before TLI_BuildDeviceList at the start of the program to make a connection to the simulation manager.<Br />
+	/// 		  Any devices configured in the simulation manager will become visible TLI_BuildDeviceList is called and can be accessed using TLI_GetDeviceList.<Br />
+	/// 		  Call TLI_InitializeSimulations at the end of the program to release the simulator.  </remarks>
+	/// <seealso cref="TLI_UninitializeSimulations()" />
+	/// <seealso cref="TLI_BuildDeviceList()" />
+	/// <seealso cref="TLI_GetDeviceList(SAFEARRAY** stringsReceiver)" />
+	FILTERFLIPPERDLL_API void __cdecl TLI_InitializeSimulations();
+
+	/// <summary> Uninitialize a connection to the Simulation Manager, which must already be running. </summary>
+	/// <seealso cref="TLI_InitializeSimulations()" />
+	FILTERFLIPPERDLL_API void __cdecl TLI_UninitializeSimulations();
+
 	/// <summary> Open the device for communications. </summary>
 	/// <param name="serialNo">	The serial no of the device to be connected. </param>
 	/// <returns> The error code (see \ref C_DLL_ERRORCODES_page "Error Codes") or zero if successful. </returns>
@@ -487,6 +500,7 @@ extern "C"
 	FILTERFLIPPERDLL_API short __cdecl FF_SetIOSettings(const char * serialNo, FF_IOSettings *settings);
 
 	/// <summary> Gets the transit time. </summary>
+	/// <param name="serialNo">  The device serial no. </param>
 	/// <returns> The transit time in milliseconds, range 300 to 2800 ms. </returns>
 	/// <seealso cref="FF_SetTransitTime(const char * serialNo, unsigned int transitTime)" />
 	FILTERFLIPPERDLL_API unsigned int __cdecl FF_GetTransitTime(const char * serialNo);

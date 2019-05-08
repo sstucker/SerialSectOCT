@@ -427,7 +427,8 @@ extern "C"
 		WORD integralGain;
 		/// <summary> The PID Integral Limit, range 0 to 0x7FFFFFFF. </summary>
 		DWORD integralLimit;
-		/// <summary> The PID Differential Gain, range 0 to 0x7FFF. </summary>
+		/// <summary> The PID Derivative Gain, range 0 to 0x7FFF. </summary>
+		/// <remarks> Kept as differentialGain rather than derivativeGain for backward compatibility</remarks>
 		WORD differentialGain;
 		/// <summary> The PID Derivative Recalculation Time, range 0 to 0x7FFF. </summary>
 		WORD derivativeRecalculationTime;
@@ -634,6 +635,19 @@ extern "C"
 	/// <seealso cref="TLI_GetDeviceListByTypesExt(char *receiveBuffer, DWORD sizeOfBuffer, int * typeIDs, int length)" />
 	BRUSHLESSMOTOR_API short __cdecl TLI_GetDeviceInfo(char const * serialNo, TLI_DeviceInfo *info);
 
+	/// <summary> Initialize a connection to the Simulation Manager, which must already be running. </summary>
+	/// <remarks> Call TLI_InitializeSimulations before TLI_BuildDeviceList at the start of the program to make a connection to the simulation manager.<Br />
+	/// 		  Any devices configured in the simulation manager will become visible TLI_BuildDeviceList is called and can be accessed using TLI_GetDeviceList.<Br />
+	/// 		  Call TLI_InitializeSimulations at the end of the program to release the simulator.  </remarks>
+	/// <seealso cref="TLI_UninitializeSimulations()" />
+	/// <seealso cref="TLI_BuildDeviceList()" />
+	/// <seealso cref="TLI_GetDeviceList(SAFEARRAY** stringsReceiver)" />
+	BRUSHLESSMOTOR_API void __cdecl TLI_InitializeSimulations();
+
+	/// <summary> Uninitialize a connection to the Simulation Manager, which must already be running. </summary>
+	/// <seealso cref="TLI_InitializeSimulations()" />
+	BRUSHLESSMOTOR_API void __cdecl TLI_UninitializeSimulations();
+
 	/// <summary> Open the device for communications. </summary>
 	/// <param name="serialNo">	The serial no of the controller to be connected. </param>
 	/// <returns> The error code (see \ref C_DLL_ERRORCODES_page "Error Codes") or zero if successful. </returns>
@@ -784,8 +798,9 @@ extern "C"
 	/// <returns> <c>true</c> if the device can home. </returns>
 	BRUSHLESSMOTOR_API bool __cdecl BMC_CanHome(char const * serialNo, short channel);
 
+	/// \deprecated
 	/// <summary> Does the device need to be Homed before a move can be performed. </summary>
-	/// <remarks> @deprecated superceded by <see cref="BMC_CanMoveWithoutHomingFirst(char const * serialNo, short channel)"/> </remarks>
+	/// <remarks> superceded by <see cref="BMC_CanMoveWithoutHomingFirst(char const * serialNo, short channel)"/> </remarks>
 	/// <param name="serialNo"> The controller serial no. </param>
 	/// <param name="channel">  The channel (1 to n). </param>
 	/// <returns> <c>true</c> if the device needs homing. </returns>
@@ -1148,6 +1163,8 @@ extern "C"
 	/// <param name="serialNo">	The controller serial no. </param>
 	/// <param name="channel">  The channel (1 to n). </param>
 	/// <param name="reverse"> if  <c>true</c> then directions will be swapped on these moves. </param>
+	/// <returns> The error code (see \ref C_DLL_ERRORCODES_page "Error Codes") or zero if successful. </returns>
+	/// <returns> The error code (see \ref C_DLL_ERRORCODES_page "Error Codes") or zero if successful. </returns>
 	BRUSHLESSMOTOR_API short __cdecl BMC_SetDirection(char const * serialNo, short channel, bool reverse);
 
 
@@ -1514,9 +1531,8 @@ extern "C"
 	/// <param name="channel"> The channel (1 to n). </param>
 	/// <returns>	The software limits mode <list type=table>
 	///							<item><term> Disable any move outside travel range. </term><term>0</term></item>
-	///							<item><term> Disable any move outside travel range, but allow moves 'just beyond limit' to be truncated to limit. </term><term>1</term></item>
-	///							<item><term> Truncate all moves beyond limit to the current limit. </term><term>2</term></item>
-	///							<item><term> Allow all moves, illegal or not. </term><term>3</term></item>
+	///							<item><term> Truncate all moves beyond limit to the current limit. </term><term>1</term></item>
+	///							<item><term> Allow all moves, illegal or not. </term><term>2</term></item>
 	/// 		  </list>. </returns>
 	/// <returns> The software limits mode. </returns>
 	/// <seealso cref="BMC_SetLimitsSoftwareApproachPolicy(const char * serialNo, MOT_LimitsSoftwareApproachPolicy limitsSoftwareApproachPolicy)" />
@@ -1528,10 +1544,9 @@ extern "C"
 	/// <param name="limitsSoftwareApproachPolicy"> The soft limit mode
 	/// 					 <list type=table>
 	///							<item><term> Disable any move outside travel range. </term><term>0</term></item>
-	///							<item><term> Disable any move outside travel range, but allow moves 'just beyond limit' to be truncated to limit. </term><term>1</term></item>
-	///							<item><term> Truncate all moves beyond limit to the current limit. </term><term>2</term></item>
-	///							<item><term> Allow all moves, illegal or not. </term><term>3</term></item>
-	/// 					 </list> <remarks> If these are bitwise-ORed with 0x0080 then the limits are swapped. </remarks> </param>
+	///							<item><term> Truncate all moves beyond limit to the current limit. </term><term>1</term></item>
+	///							<item><term> Allow all moves, illegal or not. </term><term>2</term></item>
+	/// 					 </list> </param>
 	/// <seealso cref="BMC_GetSoftLimitMode(const char * serialNo)" />
 	BRUSHLESSMOTOR_API void __cdecl BMC_SetLimitsSoftwareApproachPolicy(char const * serialNo, short channel, MOT_LimitsSoftwareApproachPolicy limitsSoftwareApproachPolicy);
 
@@ -1558,8 +1573,9 @@ extern "C"
 	/// <seealso cref="BMC_SetMotorTravelMode(char const * serialNo, short channel, int travelMode)" />
 	BRUSHLESSMOTOR_API MOT_TravelModes __cdecl BMC_GetMotorTravelMode(char const * serialNo, short channel);
 
+	/// \deprecated
 	/// <summary> Set the motor parameters for the Brushless Votor. </summary>
-	/// <remarks> @deprecated superceded by <see cref="BMC_SetMotorParamsExt(char const * serialNo, short channel, long countsPerUnit)"/> </remarks>
+	/// <remarks> superceded by <see cref="BMC_SetMotorParamsExt(char const * serialNo, short channel, long countsPerUnit)"/> </remarks>
 	/// <param name="serialNo">		 The controller serial no. </param>
 	/// <param name="channel">		 The channel (1 to n). </param>
 	/// <param name="countsPerUnit"> The counts per unit.<br/>
@@ -1569,8 +1585,9 @@ extern "C"
 	/// <seealso cref="BMC_GetMotorParams(char const * serialNo, short channel, long *countsPerUnit)" />
 	BRUSHLESSMOTOR_API short __cdecl BMC_SetMotorParams(char const * serialNo, short channel, long countsPerUnit);
 
+	/// \deprecated
 	/// <summary> Get the motor parameters for the Brushless Votor. </summary>
-	/// <remarks> @deprecated superceded by <see cref="BMC_GetMotorParamsExt(char const * serialNo, double *countsPerUnit)"/> </remarks>
+	/// <remarks> superceded by <see cref="BMC_GetMotorParamsExt(char const * serialNo, double *countsPerUnit)"/> </remarks>
 	/// <param name="serialNo">		 The controller serial no. </param>
 	/// <param name="channel">		 The channel (1 to n). </param>
 	/// <param name="countsPerUnit"> The Address of the parameter to receive the counts per unit value.<br/>
@@ -1662,7 +1679,7 @@ extern "C"
 	/// <seealso cref="BMC_SetMotorTravelLimits(char const * serialNo, short channel, double minPosition, double maxPosition)" />
 	BRUSHLESSMOTOR_API short __cdecl BMC_GetMotorTravelLimits(char const * serialNo, short channel, double *minPosition, double *maxPosition);
 
-	/// <summary>	Converts a devic unit to a real worl unit. </summary>
+	/// <summary>	Converts a device unit to a real world unit. </summary>
 	/// <param name="serialNo">   	The serial no. </param>
 	/// <param name="channel">		 The channel. </param>
 	/// <param name="device_unit">	The device unit. </param>
@@ -1676,7 +1693,7 @@ extern "C"
 	/// <seealso cref="BMC_GetDeviceUnitFromRealValue(char const * serialNo, short channel, double real_unit, int *device_unit, int unitType)" />
 	BRUSHLESSMOTOR_API short __cdecl BMC_GetRealValueFromDeviceUnit(char const * serialNo, short channel, int device_unit, double *real_unit, int unitType);
 
-	/// <summary>	Converts a devic unit to a real worl unit. </summary>
+	/// <summary>	Converts a device unit to a real world unit. </summary>
 	/// <param name="serialNo">   	The serial no. </param>
 	/// <param name="channel">		 The channel. </param>
 	/// <param name="device_unit">	The device unit. </param>

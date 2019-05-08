@@ -138,7 +138,7 @@ extern "C"
 		unsigned int numCycles;
 	} SC_CycleParameters;
 
-	/// \cond NOT_MASTER
+/// \cond NOT_MASTER
 	/// <summary> Values that represent the Operating Modes. </summary>
 	typedef enum SC_OperatingModes : byte
 	{
@@ -178,7 +178,7 @@ extern "C"
 		SC_SolenoidOpen = 0x01,///< The solenoid is open
 		SC_SolenoidClosed = 0x02///< The solenoid is closed
 	} SC_SolenoidStates;
-	/// \endcond
+/// \endcond
 
 	#pragma pack()
 
@@ -310,6 +310,19 @@ extern "C"
 	/// <seealso cref="TLI_GetDeviceListByTypeExt(char *receiveBuffer, DWORD sizeOfBuffer, int typeID)" />
 	/// <seealso cref="TLI_GetDeviceListByTypesExt(char *receiveBuffer, DWORD sizeOfBuffer, int * typeIDs, int length)" />
 	TCUBESOLENOID_API short __cdecl TLI_GetDeviceInfo(char const * serialNo, TLI_DeviceInfo *info);
+
+	/// <summary> Initialize a connection to the Simulation Manager, which must already be running. </summary>
+	/// <remarks> Call TLI_InitializeSimulations before TLI_BuildDeviceList at the start of the program to make a connection to the simulation manager.<Br />
+	/// 		  Any devices configured in the simulation manager will become visible TLI_BuildDeviceList is called and can be accessed using TLI_GetDeviceList.<Br />
+	/// 		  Call TLI_InitializeSimulations at the end of the program to release the simulator.  </remarks>
+	/// <seealso cref="TLI_UninitializeSimulations()" />
+	/// <seealso cref="TLI_BuildDeviceList()" />
+	/// <seealso cref="TLI_GetDeviceList(SAFEARRAY** stringsReceiver)" />
+	TCUBESOLENOID_API void __cdecl TLI_InitializeSimulations();
+
+	/// <summary> Uninitialize a connection to the Simulation Manager, which must already be running. </summary>
+	/// <seealso cref="TLI_InitializeSimulations()" />
+	TCUBESOLENOID_API void __cdecl TLI_UninitializeSimulations();
 
 	/// <summary> Open the device for communications. </summary>
 	/// <param name="serialNo">	The serial no of the device to be connected. </param>

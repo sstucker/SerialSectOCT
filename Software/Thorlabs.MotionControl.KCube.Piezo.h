@@ -32,7 +32,7 @@
  */
 extern "C"
 {
-	/// \cond NOT_MASTER
+/// \cond NOT_MASTER
 	
 	/// <summary> Values that represent FT_Status. </summary>
 	typedef enum FT_Status : short
@@ -105,7 +105,7 @@ extern "C"
 		KPZ_TrigPolarityHigh = 0x01,///< Trigger Polarity high
 		KPZ_TrigPolarityLow = 0x02,///< Trigger Polarity Low
 	} KPZ_TriggerPortPolarity;
-	/// \endcond
+/// \endcond
 
 	/// <summary> Information about the device generated from serial number. </summary>
 	#pragma pack(1)
@@ -171,7 +171,7 @@ extern "C"
 		short numChannels;
 	} TLI_HardwareInformation;
 
-	/// \cond NOT_MASTER
+/// \cond NOT_MASTER
 
 	/// <summary> The Piezo Control Modes. </summary>
 	/// \ingroup Common
@@ -224,7 +224,7 @@ extern "C"
 		short _maximumOutputVoltage;
 	};
 
-	/// \endcond
+/// \endcond
 
 	/// <summary> Structure containing feedback loop constants. </summary>
 	typedef struct PZ_FeedbackLoopConstants
@@ -471,6 +471,19 @@ extern "C"
 	/// <seealso cref="TLI_GetDeviceListByTypesExt(char *receiveBuffer, DWORD sizeOfBuffer, int * typeIDs, int length)" />
 	KCUBEPIEZO_API short __cdecl TLI_GetDeviceInfo(char const * serialNo, TLI_DeviceInfo *info);
 
+	/// <summary> Initialize a connection to the Simulation Manager, which must already be running. </summary>
+	/// <remarks> Call TLI_InitializeSimulations before TLI_BuildDeviceList at the start of the program to make a connection to the simulation manager.<Br />
+	/// 		  Any devices configured in the simulation manager will become visible TLI_BuildDeviceList is called and can be accessed using TLI_GetDeviceList.<Br />
+	/// 		  Call TLI_InitializeSimulations at the end of the program to release the simulator.  </remarks>
+	/// <seealso cref="TLI_UninitializeSimulations()" />
+	/// <seealso cref="TLI_BuildDeviceList()" />
+	/// <seealso cref="TLI_GetDeviceList(SAFEARRAY** stringsReceiver)" />
+	KCUBEPIEZO_API void __cdecl TLI_InitializeSimulations();
+
+	/// <summary> Uninitialize a connection to the Simulation Manager, which must already be running. </summary>
+	/// <seealso cref="TLI_InitializeSimulations()" />
+	KCUBEPIEZO_API void __cdecl TLI_UninitializeSimulations();
+
 	/// <summary> Open the device for communications. </summary>
 	/// <param name="serialNo">	The serial no of the device to be connected. </param>
 	/// <returns> The error code (see \ref C_DLL_ERRORCODES_page "Error Codes") or zero if successful. </returns>
@@ -565,6 +578,39 @@ extern "C"
 	/// <returns> The error code (see \ref C_DLL_ERRORCODES_page "Error Codes") or zero if successful. </returns>
 	/// <seealso cref="PCC_Disable(char const * serialNo)" />
 	KCUBEPIEZO_API short __cdecl PCC_Enable(char const * serialNo);
+
+	/// <summary> Determine if the device front panel can be locked. </summary>
+	/// <param name="serialNo">	The device serial no. </param>
+	/// <returns> True if we can lock the device front panel, false if not. </returns>
+	/// <seealso cref="PCC_GetFrontPanelLocked(char const * serialNo)" />
+	/// <seealso cref="PCC_RequestFrontPanelLocked(char const * serialNo)" />
+	/// <seealso cref="PCC_SetFrontPanelLock(char const * serialNo, bool locked)" />
+	KCUBEPIEZO_API bool __cdecl PCC_CanDeviceLockFrontPanel(char const * serialNo);
+
+	/// <summary> Query if the device front panel locked. </summary>
+	/// <param name="serialNo">	The device serial no. </param>
+	/// <returns> True if the device front panel is locked, false if not. </returns>
+	/// <seealso cref="PCC_CanDeviceLockFrontPanel(char const * serialNo)" />
+	/// <seealso cref="PCC_RequestFrontPanelLocked(char const * serialNo)" />
+	/// <seealso cref="PCC_SetFrontPanelLock(char const * serialNo, bool locked)" />
+	KCUBEPIEZO_API bool __cdecl  PCC_GetFrontPanelLocked(char const * serialNo);
+
+	/// <summary> Ask the device if its front panel is locked. </summary>
+	/// <param name="serialNo">	The device serial no. </param>
+	/// <returns> The error code (see \ref C_DLL_ERRORCODES_page "Error Codes") or zero if successful. </returns>
+	/// <seealso cref="PCC_CanDeviceLockFrontPanel(char const * serialNo)" />
+	/// <seealso cref="PCC_GetFrontPanelLocked(char const * serialNo)" />
+	/// <seealso cref="PCC_SetFrontPanelLock(char const * serialNo, bool locked)" />
+	KCUBEPIEZO_API short __cdecl  PCC_RequestFrontPanelLocked(char const * serialNo);
+
+	/// <summary> Sets the device front panel lock state. </summary>
+	/// <param name="serialNo">	The device serial no. </param>
+	/// <param name="locked"> True to lock the device, false to unlock. </param>
+	/// <returns> The error code (see \ref C_DLL_ERRORCODES_page "Error Codes") or zero if successful. </returns>
+	/// <seealso cref="PCC_CanDeviceLockFrontPanel(char const * serialNo)" />
+	/// <seealso cref="PCC_GetFrontPanelLocked(char const * serialNo)" />
+	/// <seealso cref="PCC_RequestFrontPanelLocked(char const * serialNo)" />
+	KCUBEPIEZO_API short __cdecl  PCC_SetFrontPanelLock(char const * serialNo, bool locked);
 
 	/// <summary> Clears the device message queue. </summary>
 	/// <remarks> see \ref C_MESSAGES_page "Device Messages" for details on how to use messages. </remarks>
@@ -775,7 +821,7 @@ extern "C"
 
 	/// <summary>	Request the Position Control Mode. </summary>
 	/// <param name="serialNo">	The serial no. </param>
-	/// <returns> The error code (see \ref C_DLL_ERRORCODES_page "Error Codes") or zero if successful. </returns>
+	/// <returns>	True if it succeeds, false if it fails. </returns>
 	/// <seealso cref="PCC_GetPositionControlMode(char const * serialNo)" />
 	/// <seealso cref="PCC_SetPositionControlMode(char const * serialNo, PZ_ControlModeTypes mode)" />
 	KCUBEPIEZO_API short __cdecl PCC_RequestPositionControlMode(char const * serialNo);
@@ -1068,8 +1114,9 @@ extern "C"
 	KCUBEPIEZO_API  short __cdecl PCC_GetMMIParamsExt(char const * serialNo, KPZ_WheelMode *wheelMode, KPZ_WheelChangeRate *voltageAdjustRate, __int32 *voltageStep, KPZ_WheelDirectionSense *directionSense,
 								   __int32 *presetVoltage1, __int32 *presetVoltage2, __int16 *displayIntensity, __int16 *displayTimeout, __int16 *displayDimIntensity);
 
+	/// \deprecated
 	/// <summary> Get the MMI Parameters for the KCube Display Interface. </summary>
-	/// <remarks> @deprecated superceded by <see cref="PCC_GetMMIParamsExt(char const * serialNo, KPZ_WheelMode *wheelMode, KPZ_WheelChangeRate *voltageAdjustRate, __int32 *voltageStep, KPZ_WheelDirectionSense *directionSense,	__int32 *presetVoltage1, __int32 *presetVoltage2, __int16 *displayIntensity, __int16 *displayTimeout, __int16 *displayDimIntensity)"/> </remarks>
+	/// <remarks> superceded by <see cref="PCC_GetMMIParamsExt(char const * serialNo, KPZ_WheelMode *wheelMode, KPZ_WheelChangeRate *voltageAdjustRate, __int32 *voltageStep, KPZ_WheelDirectionSense *directionSense,	__int32 *presetVoltage1, __int32 *presetVoltage2, __int16 *displayIntensity, __int16 *displayTimeout, __int16 *displayDimIntensity)"/> </remarks>
 	/// <param name="serialNo"> The device serial no. </param>
 	/// <param name="wheelMode">	The device wheel mode.
 	/// 					<list type=table>
@@ -1131,8 +1178,9 @@ extern "C"
 	KCUBEPIEZO_API short __cdecl PCC_SetMMIParamsExt(char const * serialNo, KPZ_WheelMode wheelMode, KPZ_WheelChangeRate voltageAdjustRate, __int32 voltageStep, KPZ_WheelDirectionSense directionSense,
 		__int32 presetVoltage1, __int32 presetVoltage2, __int16 displayIntensity, __int16 displayTimeout, __int16 displayDimIntensity);
 
+	/// \deprecated
 	/// <summary> Set the MMI Parameters for the KCube Display Interface. </summary>
-	/// <remarks> @deprecated superceded by <see cref="PCC_SetMMIParamsExt(char const * serialNo, KPZ_WheelMode wheelMode, KPZ_WheelChangeRate voltageAdjustRate, __int32 voltageStep, KPZ_WheelDirectionSense directionSense, __int32 presetVoltage1, __int32 presetVoltage2, __int16 displayIntensity, __int16 displayTimeout, __int16 displayDimIntensity)"/> </remarks>
+	/// <remarks> superceded by <see cref="PCC_SetMMIParamsExt(char const * serialNo, KPZ_WheelMode wheelMode, KPZ_WheelChangeRate voltageAdjustRate, __int32 voltageStep, KPZ_WheelDirectionSense directionSense, __int32 presetVoltage1, __int32 presetVoltage2, __int16 displayIntensity, __int16 displayTimeout, __int16 displayDimIntensity)"/> </remarks>
 	/// <param name="serialNo"> The device serial no. </param>
 	/// <param name="wheelMode">	The device wheel mode.
 	/// 					<list type=table>

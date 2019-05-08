@@ -33,7 +33,7 @@
  */
 extern "C"
 {
-	/// \cond NOT_MASTER
+/// \cond NOT_MASTER
 
 	/// <summary> Values that represent FT_Status. </summary>
 	typedef enum FT_Status : short
@@ -74,6 +74,32 @@ extern "C"
 		MOT_Forwards = 0x01,///<Move in a Forward direction
 		MOT_Backwards = 0x02,///<Move in a Backward / Reverse direction
 	} MOT_TravelDirection;
+
+	/// <summary> Values that represent TST101 Stage Idents. </summary>
+	typedef enum KST_Stages : short
+	{
+		ZST6 = 0x20, ///< ZST6.
+		ZST13 = 0x21, ///< ZST13.
+		ZST25 = 0x22, ///< ZST25.
+
+		ZST206 = 0x30, ///< ZST206.
+		ZST213 = 0x31, ///< ZST213.
+		ZST225 = 0x32, ///< ZST225.
+
+		ZFS206 = 0x40, ///< ZFS206.
+		ZFS213 = 0x41, ///< ZFS213.
+		ZFS225 = 0x42, ///< ZFS225.
+
+        DRV013_25MM   = 0x50, ///< DRV013 13mm.
+        DRV014_50MM   = 0x51, ///< DRV014 25mm.
+
+		NR360 = 0x70, ///< NR360.
+
+		PLS_X25MM = 0x72, ///< PLS_X.
+		PLS_X25MM_HiRes = 0x73, ///< PLS_X HiRes.
+
+		FW103 = 0x75, ///< FW103.
+	} KST_Stages;
 
 	/// <summary> Values that represent Limit Switch Directions. </summary>
 	typedef enum MOT_HomeLimitSwitchDirection : short
@@ -203,7 +229,7 @@ extern "C"
 		Forwards = 0x01,///< Only rotate in a forward direction
 		Reverse = 0x02,///< Only rotate in a backward direction
 	} MOT_MovementDirections;
-	/// \endcond
+/// \endcond
 
 	/// <summary> Information about the device generated from serial number. </summary>
 	#pragma pack(1)
@@ -442,6 +468,7 @@ extern "C"
 		///				<item><term>2</term><term>Trigger Input - Move relative using relative move parameters</term></item>
 		///				<item><term>3</term><term>Trigger Input - Move absolute using absolute move parameters</term></item>
 		///				<item><term>4</term><term>Trigger Input - Perform a Home action</term></item>
+		///				<item><term>5</term><term>Trigger Input - Perform a Stop action.<Br />Currently only supported on KST101</term></item>
 		///				<item><term>10</term><term>Trigger Output - General purpose output (<see cref="SCC_SetDigitalOutputs(const char * serialNo, byte outputBits)"> SetDigitalOutputs</see>)</term></item>
 		///				<item><term>11</term><term>Trigger Output - Set when device moving</term></item>
 		///				<item><term>12</term><term>Trigger Output - Set when at max velocity</term></item>
@@ -466,6 +493,7 @@ extern "C"
 		///				<item><term>2</term><term>Trigger Input - Move relative using relative move parameters</term></item>
 		///				<item><term>3</term><term>Trigger Input - Move absolute using absolute move parameters</term></item>
 		///				<item><term>4</term><term>Trigger Input - Perform a Home action</term></item>
+		///				<item><term>5</term><term>Trigger Input - Perform a Stop action.<Br />Currently only supported on KST101</term></item>
 		///				<item><term>10</term><term>Trigger Output - General purpose output (<see cref="SCC_SetDigitalOutputs(const char * serialNo, byte outputBits)"> SetDigitalOutputs</see>)</term></item>
 		///				<item><term>11</term><term>Trigger Output - Set when device moving</term></item>
 		///				<item><term>12</term><term>Trigger Output - Set when at max velocity</term></item>
@@ -520,20 +548,16 @@ extern "C"
 		/// 		  </list>
 		/// 		  </remarks>
 		MOT_PID_LoopMode loopMode;
-		/// <summary> The Encoder PID Loop proportional gain. </summary>
-		/// <remarks> Range 0 to 2^24</remarks>
+		/// <summary> The Encoder PID Loop proportional gain. Range 0 to 2^24</summary>
 		int proportionalGain;
-		/// <summary> The Encoder PID Loop integral gain. </summary>
-		/// <remarks> Range 0 to 2^24</remarks>
+		/// <summary> The Encoder PID Loop integral gain. Range 0 to 2^24</summary>
 		int integralGain;
-		/// <summary> The Encoder PID Loop differential gain. </summary>
-		/// <remarks> Range 0 to 2^24</remarks>
+		/// <summary> The Encoder PID Loop derivative gain. Range 0 to 2^24</summary>
+		/// <remarks> Kept as differentialGain rather than derivativeGain for backward compatibility</remarks>
 		int differentialGain;
-		/// <summary> The Encoder PID Loop output limit. </summary>
-		/// <remarks> Range 0 to 2^15</remarks>
+		/// <summary> The Encoder PID Loop output limit. Range 0 to 2^15</summary>
 		int PIDOutputLimit;
-		/// <summary> The Encoder PID Loop tolerance. </summary>
-		/// <remarks> Range 0 to 2^15</remarks>
+		/// <summary> The Encoder PID Loop tolerance. Range 0 to 2^15</summary>
 		int PIDTolerance;
 	} MOT_PIDLoopEncoderParams;
 	#pragma pack()
@@ -667,6 +691,19 @@ extern "C"
 	/// <seealso cref="TLI_GetDeviceListByTypesExt(char *receiveBuffer, DWORD sizeOfBuffer, int * typeIDs, int length)" />
 	KCUBESTEPPER_API short __cdecl TLI_GetDeviceInfo(char const * serialNo, TLI_DeviceInfo *info);
 
+	/// <summary> Initialize a connection to the Simulation Manager, which must already be running. </summary>
+	/// <remarks> Call TLI_InitializeSimulations before TLI_BuildDeviceList at the start of the program to make a connection to the simulation manager.<Br />
+	/// 		  Any devices configured in the simulation manager will become visible TLI_BuildDeviceList is called and can be accessed using TLI_GetDeviceList.<Br />
+	/// 		  Call TLI_InitializeSimulations at the end of the program to release the simulator.  </remarks>
+	/// <seealso cref="TLI_UninitializeSimulations()" />
+	/// <seealso cref="TLI_BuildDeviceList()" />
+	/// <seealso cref="TLI_GetDeviceList(SAFEARRAY** stringsReceiver)" />
+	KCUBESTEPPER_API void __cdecl TLI_InitializeSimulations();
+
+	/// <summary> Uninitialize a connection to the Simulation Manager, which must already be running. </summary>
+	/// <seealso cref="TLI_InitializeSimulations()" />
+	KCUBESTEPPER_API void __cdecl TLI_UninitializeSimulations();
+
 	/// <summary> Open the device for communications. </summary>
 	/// <param name="serialNo">	The serial no of the device to be connected. </param>
 	/// <returns> The error code (see \ref C_DLL_ERRORCODES_page "Error Codes") or zero if successful. </returns>
@@ -689,6 +726,33 @@ extern "C"
 	/// <summary> Sends a command to the device to make it identify iteself. </summary>
 	/// <param name="serialNo">	The device serial no. </param>
 	KCUBESTEPPER_API void __cdecl SCC_Identify(char const * serialNo);
+
+	/// <summary>	Sets the stage type. </summary>
+	/// <param name="serialNo">	The device serial no. </param>
+	/// <param name="stageId">	Identifier for the stage. 
+	/// 		 <list type=table>
+	/// 		<item><term>0x20</term><term>ZST6.</term></item>
+	///			<item><term>0x21</term><term>ZST13.</term></item>
+	///			<item><term>0x22</term><term>ZST25.</term></item>
+	///
+	///			<item><term>0x30</term><term>ZST206.</term></item>
+	///			<item><term>0x31</term><term>ZST213.</term></item>
+	///			<item><term>0x32</term><term>ZST225.</term></item>
+	///
+	///			<item><term>0x40</term><term>ZFS206.</term></item>
+	///			<item><term>0x41</term><term>ZFS213.</term></item>
+	///			<item><term>0x42</term><term>ZFS225.</term></item>
+	///
+	///			<item><term>0x70</term><term>NR360.</term></item>
+	///			
+	///			<item><term>0x72</term><term>PLS_X.</term></item>
+	///			<item><term>0x73</term><term>PLS_X HiRes.</term></item>
+	///
+	///			<item><term>0x75</term><term>FW103.</term></item>
+	///
+	/// 		  </list></param>
+	/// <returns> The error code (see \ref C_DLL_ERRORCODES_page "Error Codes") or zero if successful. </returns>
+	KCUBESTEPPER_API short __cdecl SCC_SetStageType(char const * serialNo, KST_Stages stageId);
 
 	/// <summary> Gets the hardware information from the device. </summary>
 	/// <param name="serialNo">		    The device serial no. </param>
@@ -780,6 +844,39 @@ extern "C"
 	/// <seealso cref="SCC_DisableChannel(char const * serialNo)" />
 	KCUBESTEPPER_API short __cdecl SCC_EnableChannel(char const * serialNo);
 
+	/// <summary> Determine if the device front panel can be locked. </summary>
+	/// <param name="serialNo">	The device serial no. </param>
+	/// <returns> True if we can lock the device front panel, false if not. </returns>
+	/// <seealso cref="SCC_GetFrontPanelLocked(char const * serialNo)" />
+	/// <seealso cref="SCC_RequestFrontPanelLocked(char const * serialNo)" />
+	/// <seealso cref="SCC_SetFrontPanelLock(char const * serialNo, bool locked)" />
+	KCUBESTEPPER_API bool __cdecl SCC_CanDeviceLockFrontPanel(char const * serialNo);
+
+	/// <summary> Query if the device front panel locked. </summary>
+	/// <param name="serialNo">	The device serial no. </param>
+	/// <returns> True if the device front panel is locked, false if not. </returns>
+	/// <seealso cref="SCC_CanDeviceLockFrontPanel(char const * serialNo)" />
+	/// <seealso cref="SCC_RequestFrontPanelLocked(char const * serialNo)" />
+	/// <seealso cref="SCC_SetFrontPanelLock(char const * serialNo, bool locked)" />
+	KCUBESTEPPER_API bool __cdecl  SCC_GetFrontPanelLocked(char const * serialNo);
+
+	/// <summary> Ask the device if its front panel is locked. </summary>
+	/// <param name="serialNo">	The device serial no. </param>
+	/// <returns> The error code (see \ref C_DLL_ERRORCODES_page "Error Codes") or zero if successful. </returns>
+	/// <seealso cref="SCC_CanDeviceLockFrontPanel(char const * serialNo)" />
+	/// <seealso cref="SCC_GetFrontPanelLocked(char const * serialNo)" />
+	/// <seealso cref="SCC_SetFrontPanelLock(char const * serialNo, bool locked)" />
+	KCUBESTEPPER_API short __cdecl  SCC_RequestFrontPanelLocked(char const * serialNo);
+
+	/// <summary> Sets the device front panel lock state. </summary>
+	/// <param name="serialNo">	The device serial no. </param>
+	/// <param name="locked"> True to lock the device, false to unlock. </param>
+	/// <returns> The error code (see \ref C_DLL_ERRORCODES_page "Error Codes") or zero if successful. </returns>
+	/// <seealso cref="SCC_CanDeviceLockFrontPanel(char const * serialNo)" />
+	/// <seealso cref="SCC_GetFrontPanelLocked(char const * serialNo)" />
+	/// <seealso cref="SCC_RequestFrontPanelLocked(char const * serialNo)" />
+	KCUBESTEPPER_API short __cdecl  SCC_SetFrontPanelLock(char const * serialNo, bool locked);
+
 	/// <summary> Get number of positions. </summary>
 	/// <remarks> The GetNumberPositions function will get the maximum position reachable by the device.<br />
 	/// 		  The motor may need to be \ref C_MOTOR_sec10 "Homed" before this parameter can be used. </remarks>
@@ -826,8 +923,9 @@ extern "C"
 	/// <returns> <c>true</c> if the device can home. </returns>
 	KCUBESTEPPER_API bool __cdecl SCC_CanHome(char const * serialNo);
 
+	/// \deprecated
 	/// <summary> Does the device need to be Homed before a move can be performed. </summary>
-	/// <remarks> @deprecated superceded by <see cref="SCC_CanMoveWithoutHomingFirst(char const * serialNo)"/> </remarks>
+	/// <remarks> superceded by <see cref="SCC_CanMoveWithoutHomingFirst(char const * serialNo)"/> </remarks>
 	/// <param name="serialNo"> The serial no. </param>
 	/// <returns> <c>true</c> if the device needs homing. </returns>
 	KCUBESTEPPER_API bool __cdecl SCC_NeedsHoming(char const * serialNo);
@@ -1147,6 +1245,7 @@ extern "C"
 	/// 		  This parameter will tell the system to reverse the direction sense whnd moving, jogging etc. </remarks>
 	/// <param name="serialNo">	The device serial no. </param>
 	/// <param name="reverse"> if  <c>true</c> then directions will be swapped on these moves. </param>
+	/// <returns> The error code (see \ref C_DLL_ERRORCODES_page "Error Codes") or zero if successful. </returns>
 	KCUBESTEPPER_API void __cdecl SCC_SetDirection(char const * serialNo, bool reverse);
 
 	/// <summary> Stop the current move immediately (with risk of losing track of position). </summary>
@@ -1300,9 +1399,8 @@ extern "C"
 	/// <param name="serialNo">	The device serial no. </param>
 	/// <returns>	The software limits mode <list type=table>
 	///							<item><term> Disable any move outside travel range. </term><term>0</term></item>
-	///							<item><term> Disable any move outside travel range, but allow moves 'just beyond limit' to be truncated to limit. </term><term>1</term></item>
-	///							<item><term> Truncate all moves beyond limit to the current limit. </term><term>2</term></item>
-	///							<item><term> Allow all moves, illegal or not. </term><term>3</term></item>
+	///							<item><term> Truncate all moves beyond limit to the current limit. </term><term>1</term></item>
+	///							<item><term> Allow all moves, illegal or not. </term><term>2</term></item>
 	/// 		  </list>. </returns>
 	/// <returns> The software limits mode. </returns>
 	/// <seealso cref="SCC_SetLimitsSoftwareApproachPolicy(const char * serialNo, MOT_LimitsSoftwareApproachPolicy limitsSoftwareApproachPolicy)" />
@@ -1313,10 +1411,9 @@ extern "C"
 	/// <param name="limitsSoftwareApproachPolicy"> The soft limit mode
 	/// 					 <list type=table>
 	///							<item><term> Disable any move outside travel range. </term><term>0</term></item>
-	///							<item><term> Disable any move outside travel range, but allow moves 'just beyond limit' to be truncated to limit. </term><term>1</term></item>
-	///							<item><term> Truncate all moves beyond limit to the current limit. </term><term>2</term></item>
-	///							<item><term> Allow all moves, illegal or not. </term><term>3</term></item>
-	/// 					 </list> <remarks> If these are bitwise-ORed with 0x0080 then the limits are swapped. </remarks> </param>
+	///							<item><term> Truncate all moves beyond limit to the current limit. </term><term>1</term></item>
+	///							<item><term> Allow all moves, illegal or not. </term><term>2</term></item>
+	/// 					 </list> </param>
 	/// <seealso cref="SCC_GetSoftLimitMode(const char * serialNo)" />
 	KCUBESTEPPER_API void __cdecl SCC_SetLimitsSoftwareApproachPolicy(char const * serialNo, MOT_LimitsSoftwareApproachPolicy limitsSoftwareApproachPolicy);
 
@@ -1353,8 +1450,9 @@ extern "C"
 	KCUBESTEPPER_API  short __cdecl SCC_GetMMIParamsExt(char const * serialNo, KMOT_WheelMode *wheelMode, __int32 *wheelMaxVelocity, __int32 *wheelAcceleration, KMOT_WheelDirectionSense *directionSense,
 		__int32 *presetPosition1, __int32 *presetPosition2, __int16 *displayIntensity, __int16 *displayTimeout, __int16 *displayDimIntensity);
 
+	/// \deprecated
 	/// <summary> Get the MMI Parameters for the KCube Display Interface. </summary>
-	/// <remarks> @deprecated superceded by <see cref="SCC_GetMMIParamsExt(char const * serialNo, KMOT_WheelMode *wheelMode, __int32 *wheelMaxVelocity, __int32 *wheelAcceleration, KMOT_WheelDirectionSense *directionSense, __int32 *presetPosition1, __int32 *presetPosition2, __int16 *displayIntensity, __int16 *displayTimeout, __int16 *displayDimIntensity)"/> </remarks>
+	/// <remarks> superceded by <see cref="SCC_GetMMIParamsExt(char const * serialNo, KMOT_WheelMode *wheelMode, __int32 *wheelMaxVelocity, __int32 *wheelAcceleration, KMOT_WheelDirectionSense *directionSense, __int32 *presetPosition1, __int32 *presetPosition2, __int16 *displayIntensity, __int16 *displayTimeout, __int16 *displayDimIntensity)"/> </remarks>
 	/// <param name="serialNo"> The device serial no. </param>
 	/// <param name="wheelMode">	The device wheel mode.
 	/// 					<list type=table>
@@ -1402,8 +1500,9 @@ extern "C"
 	KCUBESTEPPER_API short __cdecl SCC_SetMMIParamsExt(char const * serialNo, KMOT_WheelMode wheelMode, __int32 wheelMaxVelocity, __int32 wheelAcceleration, KMOT_WheelDirectionSense directionSense,
 		__int32 presetPosition1, __int32 presetPosition2, __int16 displayIntensity, __int16 displayTimeout, __int16 displayDimIntensity);
 
+	/// \deprecated
 	/// <summary> Set the MMI Parameters for the KCube Display Interface. </summary>
-	/// <remarks> @deprecated superceded by <see cref="SCC_SetMMIParams(char const * serialNo, KMOT_WheelMode wheelMode, __int32 wheelMaxVelocity, __int32 wheelAcceleration, KMOT_WheelDirectionSense directionSense, __int32 presetPosition1, __int32 presetPosition2, __int16 displayIntensity)"/> </remarks>
+	/// <remarks> superceded by <see cref="SCC_SetMMIParams(char const * serialNo, KMOT_WheelMode wheelMode, __int32 wheelMaxVelocity, __int32 wheelAcceleration, KMOT_WheelDirectionSense directionSense, __int32 presetPosition1, __int32 presetPosition2, __int16 displayIntensity)"/> </remarks>
 	/// <param name="serialNo"> The device serial no. </param>
 	/// <param name="wheelMode">	The device wheel mode.
 	/// 					<list type=table>
@@ -1443,6 +1542,7 @@ extern "C"
 	///						<item><term>2</term><term>Trigger Input - Move relative using relative move parameters</term></item>
 	///						<item><term>3</term><term>Trigger Input - Move absolute using absolute move parameters</term></item>
 	///						<item><term>4</term><term>Trigger Input - Perform a Home action</term></item>
+	///						<item><term>5</term><term>Trigger Input - Perform a Stop action.<Br />Currently only supported on KST101</term></item>
 	///						<item><term>10</term><term>Trigger Output - General purpose output (<see cref="SCC_SetDigitalOutputs(const char * serialNo, byte outputBits)"> SetDigitalOutputs</see>)</term></item>
 	///						<item><term>11</term><term>Trigger Output - Set when device moving</term></item>
 	///						<item><term>12</term><term>Trigger Output - Set when at max velocity</term></item>
@@ -1459,6 +1559,7 @@ extern "C"
 	///						<item><term>2</term><term>Trigger Input - Move relative using relative move parameters</term></item>
 	///						<item><term>3</term><term>Trigger Input - Move absolute using absolute move parameters</term></item>
 	///						<item><term>4</term><term>Trigger Input - Perform a Home action</term></item>
+	///						<item><term>5</term><term>Trigger Input - Perform a Stop action.<Br />Currently only supported on KST101</term></item>
 	///						<item><term>10</term><term>Trigger Output - General purpose output (<see cref="SCC_SetDigitalOutputs(const char * serialNo, byte outputBits)"> SetDigitalOutputs</see>)</term></item>
 	///						<item><term>11</term><term>Trigger Output - Set when device moving</term></item>
 	///						<item><term>12</term><term>Trigger Output - Set when at max velocity</term></item>
@@ -1484,6 +1585,7 @@ extern "C"
 	///						<item><term>2</term><term>Trigger Input - Move relative using relative move parameters</term></item>
 	///						<item><term>3</term><term>Trigger Input - Move absolute using absolute move parameters</term></item>
 	///						<item><term>4</term><term>Trigger Input - Perform a Home action</term></item>
+	///						<item><term>5</term><term>Trigger Input - Perform a Stop action.<Br />Currently only supported on KST101</term></item>
 	///						<item><term>10</term><term>Trigger Output - General purpose output (<see cref="SCC_SetDigitalOutputs(const char * serialNo, byte outputBits)"> SetDigitalOutputs</see>)</term></item>
 	///						<item><term>11</term><term>Trigger Output - Set when device moving</term></item>
 	///						<item><term>12</term><term>Trigger Output - Set when at max velocity</term></item>
@@ -1500,6 +1602,7 @@ extern "C"
 	///						<item><term>2</term><term>Trigger Input - Move relative using relative move parameters</term></item>
 	///						<item><term>3</term><term>Trigger Input - Move absolute using absolute move parameters</term></item>
 	///						<item><term>4</term><term>Trigger Input - Perform a Home action</term></item>
+	///						<item><term>5</term><term>Trigger Input - Perform a Stop action.<Br />Currently only supported on KST101</term></item>
 	///						<item><term>10</term><term>Trigger Output - General purpose output (<see cref="SCC_SetDigitalOutputs(const char * serialNo, byte outputBits)"> SetDigitalOutputs</see>)</term></item>
 	///						<item><term>11</term><term>Trigger Output - Set when device moving</term></item>
 	///						<item><term>12</term><term>Trigger Output - Set when at max velocity</term></item>
@@ -2097,8 +2200,9 @@ extern "C"
 	/// <seealso cref="SCC_SetMotorTravelMode(char const * serialNo, int travelMode)" />
 	KCUBESTEPPER_API MOT_TravelModes __cdecl SCC_GetMotorTravelMode(char const * serialNo);
 
+	/// \deprecated
 	/// <summary> Sets the motor stage parameters. </summary>
-	/// <remarks> @deprecated superceded by <see cref="SCC_SetMotorParamsExt(char const * serialNo, double stepsPerRevolution, double gearboxRatio, double pitch)"/> </remarks>
+	/// <remarks> superceded by <see cref="SCC_SetMotorParamsExt(char const * serialNo, double stepsPerRevolution, double gearboxRatio, double pitch)"/> </remarks>
 	/// <remarks> These parameters, when combined define the stage motion in terms of \ref RealWorldUnits_page. (mm or degrees)<br />
 	/// 		  The real world unit is defined from stepsPerRev * gearBoxRatio / pitch.</remarks>
 	/// <param name="serialNo"> The device serial no. </param>
@@ -2109,8 +2213,9 @@ extern "C"
 	/// <seealso cref="SCC_GetMotorParams(char const * serialNo, long *stepsPerRev, long *gearBoxRatio, float *pitch)" />
 	KCUBESTEPPER_API short __cdecl SCC_SetMotorParams(char const * serialNo, long stepsPerRev, long gearBoxRatio, float pitch);
 
+	/// \deprecated
 	/// <summary> Gets the motor stage parameters. </summary>
-	/// <remarks> @deprecated superceded by <see cref="SCC_GetMotorParamsExt(char const * serialNo, double *stepsPerRevolution, double *gearboxRatio, double *pitch)"/> </remarks>
+	/// <remarks> superceded by <see cref="SCC_GetMotorParamsExt(char const * serialNo, double *stepsPerRevolution, double *gearboxRatio, double *pitch)"/> </remarks>
 	/// <remarks> These parameters, when combined define the stage motion in terms of \ref RealWorldUnits_page. (mm or degrees)<br />
 	/// 		  The real world unit is defined from stepsPerRev * gearBoxRatio / pitch.</remarks>
 	/// <param name="serialNo"> The device serial no. </param>
@@ -2221,7 +2326,7 @@ extern "C"
 	/// <seealso cref="SCC_RequestDigitalOutputs(char const * serialNo)" />
 	KCUBESTEPPER_API short __cdecl SCC_SetDigitalOutputs(char const * serialNo, byte outputsBits);
 
-	/// <summary>	Converts a devic unit to a real worl unit. </summary>
+	/// <summary>	Converts a device unit to a real world unit. </summary>
 	/// <param name="serialNo">   	The serial no. </param>
 	/// <param name="device_unit">	The device unit. </param>
 	/// <param name="real_unit">  	The real unit. </param>
@@ -2234,7 +2339,7 @@ extern "C"
 	/// <seealso cref="SCC_GetDeviceUnitFromRealValue(char const * serialNo, double real_unit, int *device_unit, int unitType)" />
 	KCUBESTEPPER_API short __cdecl SCC_GetRealValueFromDeviceUnit(char const * serialNo, int device_unit, double *real_unit, int unitType);
 
-	/// <summary>	Converts a devic unit to a real worl unit. </summary>
+	/// <summary>	Converts a device unit to a real world unit. </summary>
 	/// <param name="serialNo">   	The serial no. </param>
 	/// <param name="device_unit">	The device unit. </param>
 	/// <param name="real_unit">  	The real unit. </param>
