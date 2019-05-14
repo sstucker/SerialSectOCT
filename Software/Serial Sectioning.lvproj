@@ -51,6 +51,12 @@
 			<Item Name="MainGUI.vi" Type="VI" URL="../MainGUI.vi"/>
 			<Item Name="SettingsGUI.vi" Type="VI" URL="../SettingsGUI.vi"/>
 		</Item>
+		<Item Name="PM Read Test.vi" Type="VI" URL="../../../../Power meter/Private/PM Read Test.vi"/>
+		<Item Name="PM_Close.vi" Type="VI" URL="../../../../Power meter/Private/PM_Close.vi"/>
+		<Item Name="Test Data Trimming.vi" Type="VI" URL="../../../../SerialSectOCT-Jiarui/SerialSectOCT/Software/Test Code/Test Data Trimming.vi"/>
+		<Item Name="Test Single Queue Process.vi" Type="VI" URL="../../../../SerialSectOCT-Jiarui/SerialSectOCT/Software/Test Code/Test Single Queue Process.vi"/>
+		<Item Name="Test Single Queue Regime.vi" Type="VI" URL="../../../../SerialSectOCT-Jiarui/SerialSectOCT/Software/Test Code/Test Single Queue Regime.vi"/>
+		<Item Name="TLPM.llb" Type="Document" URL="../../../../Power meter/Private/TLPM.llb"/>
 		<Item Name="Dependencies" Type="Dependencies">
 			<Item Name="vi.lib" Type="Folder">
 				<Item Name="3D Plot Datatype.lvclass" Type="LVClass" URL="/&lt;vilib&gt;/Math Plots/3D Math Plots/3D Plot/3D Plot Datatype/3D Plot Datatype.lvclass"/>
@@ -455,10 +461,12 @@
 			<Item Name="init Device.vi" Type="VI" URL="../Hardware Mfg/Thorlabs OCT/LabVIEW/user.lib/SpectralRadar.llb/init Device.vi"/>
 			<Item Name="init Full Range.vi" Type="VI" URL="../Hardware Mfg/Thorlabs OCT/LabVIEW/user.lib/SpectralRadar.llb/init Full Range.vi"/>
 			<Item Name="init Probe.vi" Type="VI" URL="../Hardware Mfg/Thorlabs OCT/LabVIEW/user.lib/SpectralRadar.llb/init Probe.vi"/>
+			<Item Name="Init_PM.vi" Type="VI" URL="../../../../Power meter/Private/Init_PM.vi"/>
 			<Item Name="load Calibration.vi" Type="VI" URL="../Hardware Mfg/Thorlabs OCT/LabVIEW/user.lib/SpectralRadar.llb/load Calibration.vi"/>
 			<Item Name="lvanlys.dll" Type="Document" URL="/&lt;resource&gt;/lvanlys.dll"/>
 			<Item Name="measure Calibration.vi" Type="VI" URL="../Hardware Mfg/Thorlabs OCT/LabVIEW/user.lib/SpectralRadar.llb/measure Calibration.vi"/>
 			<Item Name="measure Spectra.vi" Type="VI" URL="../Hardware Mfg/Thorlabs OCT/LabVIEW/user.lib/SpectralRadar.llb/measure Spectra.vi"/>
+			<Item Name="Measure-Power_PM.vi" Type="VI" URL="../../../../Power meter/Private/Measure-Power_PM.vi"/>
 			<Item Name="nilvaiu.dll" Type="Document" URL="nilvaiu.dll">
 				<Property Name="NI.PreserveRelativePath" Type="Bool">true</Property>
 			</Item>
@@ -479,6 +487,7 @@
 			<Item Name="Save text module - Copy (2).vi" Type="VI" URL="../General/Save text module - Copy (2).vi"/>
 			<Item Name="Save text module - Copy.vi" Type="VI" URL="../General/Save text module - Copy.vi"/>
 			<Item Name="Save text module.vi" Type="VI" URL="../General/Save text module.vi"/>
+			<Item Name="SaveText.vi" Type="VI" URL="../../../../Power meter/Driver/SaveText.vi"/>
 			<Item Name="set Apodized Spectrum Output.vi" Type="VI" URL="../Hardware Mfg/Thorlabs OCT/LabVIEW/user.lib/SpectralRadar.llb/set Apodized Spectrum Output.vi"/>
 			<Item Name="set Calibration.vi" Type="VI" URL="../Hardware Mfg/Thorlabs OCT/LabVIEW/user.lib/SpectralRadar.llb/set Calibration.vi"/>
 			<Item Name="set Complex Scan Output.vi" Type="VI" URL="../Hardware Mfg/Thorlabs OCT/LabVIEW/user.lib/SpectralRadar.llb/set Complex Scan Output.vi"/>
@@ -493,6 +502,8 @@
 			<Item Name="set Processing Parameter Int.vi" Type="VI" URL="../Hardware Mfg/Thorlabs OCT/LabVIEW/user.lib/SpectralRadar.llb/set Processing Parameter Int.vi"/>
 			<Item Name="set Scan Output.vi" Type="VI" URL="../Hardware Mfg/Thorlabs OCT/LabVIEW/user.lib/SpectralRadar.llb/set Scan Output.vi"/>
 			<Item Name="set Spectrum Output.vi" Type="VI" URL="../Hardware Mfg/Thorlabs OCT/LabVIEW/user.lib/SpectralRadar.llb/set Spectrum Output.vi"/>
+			<Item Name="Set-Get-Avg_PM.vi" Type="VI" URL="../../../../Power meter/Private/Set-Get-Avg_PM.vi"/>
+			<Item Name="Set-Get-Wavelength_PM.vi" Type="VI" URL="../../../../Power meter/Private/Set-Get-Wavelength_PM.vi"/>
 			<Item Name="shift Scan Pattern.vi" Type="VI" URL="../Hardware Mfg/Thorlabs OCT/LabVIEW/user.lib/SpectralRadar.llb/shift Scan Pattern.vi"/>
 			<Item Name="SpectralRadar.dll" Type="Document" URL="SpectralRadar.dll">
 				<Property Name="NI.PreserveRelativePath" Type="Bool">true</Property>
@@ -500,11 +511,25 @@
 			<Item Name="SpectralRadar.dll" Type="Document" URL="../../../../../Program Files/Thorlabs/SpectralRadar/DLL/SpectralRadar.dll"/>
 			<Item Name="start Measurement.vi" Type="VI" URL="../Hardware Mfg/Thorlabs OCT/LabVIEW/user.lib/SpectralRadar.llb/start Measurement.vi"/>
 			<Item Name="stop Measurement.vi" Type="VI" URL="../Hardware Mfg/Thorlabs OCT/LabVIEW/user.lib/SpectralRadar.llb/stop Measurement.vi"/>
+			<Item Name="Test Single Queue Trim.vi" Type="VI" URL="../../../../SerialSectOCT-Jiarui/SerialSectOCT/Software/Test Code/Test Single Queue Trim.vi"/>
 			<Item Name="Thorlabs.MotionControl.Controls.dll" Type="Document" URL="../Thorlabs.MotionControl.Controls.dll"/>
-			<Item Name="Thorlabs.MotionControl.Controls.dll" Type="Document" URL="../../../Software/Thorlabs.MotionControl.Controls.dll"/>
-			<Item Name="Thorlabs.MotionControl.Controls.dll" Type="Document" URL="../../../../../Projects/Serial Sectioning OCT - TortoiseGIT/SerialSectOCT/Software/Thorlabs.MotionControl.Controls.dll"/>
 			<Item Name="Thorlabs.MotionControl.GenericMotorCLI.dll" Type="Document" URL="../Thorlabs.MotionControl.GenericMotorCLI.dll"/>
 			<Item Name="Thorlabs.MotionControl.IntegratedStepperMotorsCLI.dll" Type="Document" URL="../Thorlabs.MotionControl.IntegratedStepperMotorsCLI.dll"/>
+			<Item Name="TLPM Close.vi" Type="VI" URL="../../../../Power meter/Private/TLPM.llb/TLPM Close.vi"/>
+			<Item Name="TLPM Find Resources.vi" Type="VI" URL="../../../../Power meter/Driver/LabView/LabView 64 bit/TLPM.llb/TLPM Find Resources.vi"/>
+			<Item Name="TLPM Get Average Time.vi" Type="VI" URL="../../../../Power meter/Driver/LabView/LabView 64 bit/TLPM.llb/TLPM Get Average Time.vi"/>
+			<Item Name="TLPM Get Resource Name.vi" Type="VI" URL="../../../../Power meter/Driver/LabView/LabView 64 bit/TLPM.llb/TLPM Get Resource Name.vi"/>
+			<Item Name="TLPM Get Wavelength.vi" Type="VI" URL="../../../../Power meter/Driver/LabView/LabView 64 bit/TLPM.llb/TLPM Get Wavelength.vi"/>
+			<Item Name="TLPM Initialize.vi" Type="VI" URL="../../../../Power meter/Driver/LabView/LabView 64 bit/TLPM.llb/TLPM Initialize.vi"/>
+			<Item Name="TLPM Measure Power.vi" Type="VI" URL="../../../../Power meter/Driver/LabView/LabView 64 bit/TLPM.llb/TLPM Measure Power.vi"/>
+			<Item Name="TLPM Sensor Information.vi" Type="VI" URL="../../../../Power meter/Driver/LabView/LabView 64 bit/TLPM.llb/TLPM Sensor Information.vi"/>
+			<Item Name="TLPM Set Average Time.vi" Type="VI" URL="../../../../Power meter/Driver/LabView/LabView 64 bit/TLPM.llb/TLPM Set Average Time.vi"/>
+			<Item Name="TLPM Set Wavelength.vi" Type="VI" URL="../../../../Power meter/Driver/LabView/LabView 64 bit/TLPM.llb/TLPM Set Wavelength.vi"/>
+			<Item Name="TLPM VXIpnp Error Converter.vi" Type="VI" URL="../../../../Power meter/Driver/LabView/LabView 64 bit/TLPM.llb/TLPM VXIpnp Error Converter.vi"/>
+			<Item Name="TLPM_64.dll" Type="Document" URL="TLPM_64.dll">
+				<Property Name="NI.PreserveRelativePath" Type="Bool">true</Property>
+			</Item>
+			<Item Name="TLPM_64.dll" Type="Document" URL="../../../../Power meter/Driver/TLPM_64.dll"/>
 		</Item>
 		<Item Name="Build Specifications" Type="Build"/>
 	</Item>
