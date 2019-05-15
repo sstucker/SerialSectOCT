@@ -53,9 +53,6 @@
 		</Item>
 		<Item Name="PM Read Test.vi" Type="VI" URL="../../../../Power meter/Private/PM Read Test.vi"/>
 		<Item Name="PM_Close.vi" Type="VI" URL="../../../../Power meter/Private/PM_Close.vi"/>
-		<Item Name="Test Data Trimming.vi" Type="VI" URL="../../../../SerialSectOCT-Jiarui/SerialSectOCT/Software/Test Code/Test Data Trimming.vi"/>
-		<Item Name="Test Single Queue Process.vi" Type="VI" URL="../../../../SerialSectOCT-Jiarui/SerialSectOCT/Software/Test Code/Test Single Queue Process.vi"/>
-		<Item Name="Test Single Queue Regime.vi" Type="VI" URL="../../../../SerialSectOCT-Jiarui/SerialSectOCT/Software/Test Code/Test Single Queue Regime.vi"/>
 		<Item Name="TLPM.llb" Type="Document" URL="../../../../Power meter/Private/TLPM.llb"/>
 		<Item Name="Dependencies" Type="Dependencies">
 			<Item Name="vi.lib" Type="Folder">
@@ -339,19 +336,12 @@
 				<Item Name="IMAQ Read Custom Data" Type="VI" URL="/&lt;vilib&gt;/vision/Basics.llb/IMAQ Read Custom Data"/>
 				<Item Name="IMAQ ReadFile" Type="VI" URL="/&lt;vilib&gt;/vision/Files.llb/IMAQ ReadFile"/>
 				<Item Name="IMAQ SetImageSize" Type="VI" URL="/&lt;vilib&gt;/vision/Basics.llb/IMAQ SetImageSize"/>
-				<Item Name="IMAQ Write BMP File 2" Type="VI" URL="/&lt;vilib&gt;/vision/Files.llb/IMAQ Write BMP File 2"/>
 				<Item Name="IMAQ Write BMP String" Type="VI" URL="/&lt;vilib&gt;/vision/Files.llb/IMAQ Write BMP String"/>
 				<Item Name="IMAQ Write Custom Data" Type="VI" URL="/&lt;vilib&gt;/vision/Basics.llb/IMAQ Write Custom Data"/>
-				<Item Name="IMAQ Write File 2" Type="VI" URL="/&lt;vilib&gt;/vision/Files.llb/IMAQ Write File 2"/>
-				<Item Name="IMAQ Write Image And Vision Info File 2" Type="VI" URL="/&lt;vilib&gt;/vision/Files.llb/IMAQ Write Image And Vision Info File 2"/>
 				<Item Name="IMAQ Write Image And Vision Info String" Type="VI" URL="/&lt;vilib&gt;/vision/Files.llb/IMAQ Write Image And Vision Info String"/>
-				<Item Name="IMAQ Write JPEG File 2" Type="VI" URL="/&lt;vilib&gt;/vision/Files.llb/IMAQ Write JPEG File 2"/>
 				<Item Name="IMAQ Write JPEG String" Type="VI" URL="/&lt;vilib&gt;/vision/Files.llb/IMAQ Write JPEG String"/>
-				<Item Name="IMAQ Write JPEG2000 File 2" Type="VI" URL="/&lt;vilib&gt;/vision/Files.llb/IMAQ Write JPEG2000 File 2"/>
-				<Item Name="IMAQ Write PNG File 2" Type="VI" URL="/&lt;vilib&gt;/vision/Files.llb/IMAQ Write PNG File 2"/>
 				<Item Name="IMAQ Write PNG String" Type="VI" URL="/&lt;vilib&gt;/vision/Files.llb/IMAQ Write PNG String"/>
 				<Item Name="IMAQ Write String" Type="VI" URL="/&lt;vilib&gt;/vision/Files.llb/IMAQ Write String"/>
-				<Item Name="IMAQ Write TIFF File 2" Type="VI" URL="/&lt;vilib&gt;/vision/Files.llb/IMAQ Write TIFF File 2"/>
 				<Item Name="IMAQ Write TIFF String" Type="VI" URL="/&lt;vilib&gt;/vision/Files.llb/IMAQ Write TIFF String"/>
 				<Item Name="Longest Line Length in Pixels.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/Longest Line Length in Pixels.vi"/>
 				<Item Name="LV3DPointTypeDef.ctl" Type="VI" URL="/&lt;vilib&gt;/Utility/miscctls.llb/LV3DPointTypeDef.ctl"/>
@@ -413,8 +403,6 @@
 			<Item Name="ATSApi.dll" Type="Document" URL="ATSApi.dll">
 				<Property Name="NI.PreserveRelativePath" Type="Bool">true</Property>
 			</Item>
-			<Item Name="AxsunOCTControl.dll" Type="Document" URL="../../../../SerialSecOCT/SerialSectOCT/Software/Hardware Mfg/Axsun Laser/AxsunOCTControl.dll"/>
-			<Item Name="AxsunOCTControl.dll" Type="Document" URL="../../../../../Users/nkemp/Documents/Visual Studio 2015/Projects/AxsunProjects_LV2015/Axsun OCT Demo/source/hardware control/AxsunOCTControl.dll"/>
 			<Item Name="Calibration Selection.ctl" Type="VI" URL="../Hardware Mfg/Thorlabs OCT/LabVIEW/user.lib/SpectralRadar.llb/Calibration Selection.ctl"/>
 			<Item Name="clear Complex Data.vi" Type="VI" URL="../Hardware Mfg/Thorlabs OCT/LabVIEW/user.lib/SpectralRadar.llb/clear Complex Data.vi"/>
 			<Item Name="clear Data.vi" Type="VI" URL="../Hardware Mfg/Thorlabs OCT/LabVIEW/user.lib/SpectralRadar.llb/clear Data.vi"/>
@@ -423,7 +411,6 @@
 			<Item Name="clear Scan Pattern.vi" Type="VI" URL="../Hardware Mfg/Thorlabs OCT/LabVIEW/user.lib/SpectralRadar.llb/clear Scan Pattern.vi"/>
 			<Item Name="close Device.vi" Type="VI" URL="../Hardware Mfg/Thorlabs OCT/LabVIEW/user.lib/SpectralRadar.llb/close Device.vi"/>
 			<Item Name="close Probe.vi" Type="VI" URL="../Hardware Mfg/Thorlabs OCT/LabVIEW/user.lib/SpectralRadar.llb/close Probe.vi"/>
-			<Item Name="cluster_Axsun.ctl" Type="VI" URL="../../../Project/SerialSecOCT/SerialSectOCT/Software/Hardware Mfg/Axsun Laser/cluster_Axsun.ctl"/>
 			<Item Name="compute Linear K Raw Data.vi" Type="VI" URL="../Hardware Mfg/Thorlabs OCT/LabVIEW/user.lib/SpectralRadar.llb/compute Linear K Raw Data.vi"/>
 			<Item Name="CONEX-CC Absolute Move v2.vi" Type="VI" URL="../Hardware/Table Stage/CONEX/CONEX/CONEX-CC/CONEX-CC.llb/CONEX-CC Absolute Move v2.vi"/>
 			<Item Name="CONEX-CC Get Current Position v2.vi" Type="VI" URL="../Hardware/Table Stage/CONEX/CONEX/CONEX-CC/CONEX-CC.llb/CONEX-CC Get Current Position v2.vi"/>
@@ -446,6 +433,9 @@
 			<Item Name="create Volume Pattern.vi" Type="VI" URL="../Hardware Mfg/Thorlabs OCT/LabVIEW/user.lib/SpectralRadar.llb/create Volume Pattern.vi"/>
 			<Item Name="Data 2D Export Format Selection.ctl" Type="VI" URL="../Hardware Mfg/Thorlabs OCT/LabVIEW/user.lib/SpectralRadar.llb/Data 2D Export Format Selection.ctl"/>
 			<Item Name="Data Analyzation Selection.ctl" Type="VI" URL="../Hardware Mfg/Thorlabs OCT/LabVIEW/user.lib/SpectralRadar.llb/Data Analyzation Selection.ctl"/>
+			<Item Name="Data Queue manager.vi" Type="VI" URL="../General/Data Queue manager.vi"/>
+			<Item Name="Data queue status.vi" Type="VI" URL="../General/Data queue status.vi"/>
+			<Item Name="Data trimming.vi" Type="VI" URL="../General/Data trimming.vi"/>
 			<Item Name="Device Camera Preset Selection.ctl" Type="VI" URL="../Hardware Mfg/Thorlabs OCT/LabVIEW/user.lib/SpectralRadar.llb/Device Camera Preset Selection.ctl"/>
 			<Item Name="display Data 1D.vi" Type="VI" URL="../Hardware Mfg/Thorlabs OCT/LabVIEW/user.lib/SpectralRadar.llb/display Data 1D.vi"/>
 			<Item Name="display Data 2D.vi" Type="VI" URL="../Hardware Mfg/Thorlabs OCT/LabVIEW/user.lib/SpectralRadar.llb/display Data 2D.vi"/>
@@ -484,6 +474,7 @@
 			<Item Name="Processing Flag Selection.ctl" Type="VI" URL="../Hardware Mfg/Thorlabs OCT/LabVIEW/user.lib/SpectralRadar.llb/Processing Flag Selection.ctl"/>
 			<Item Name="Processing Parameter Int Selection.ctl" Type="VI" URL="../Hardware Mfg/Thorlabs OCT/LabVIEW/user.lib/SpectralRadar.llb/Processing Parameter Int Selection.ctl"/>
 			<Item Name="Raw Data Export Format Selection.ctl" Type="VI" URL="../Hardware Mfg/Thorlabs OCT/LabVIEW/user.lib/SpectralRadar.llb/Raw Data Export Format Selection.ctl"/>
+			<Item Name="save module.vi" Type="VI" URL="../General/save module.vi"/>
 			<Item Name="Save text module - Copy (2).vi" Type="VI" URL="../General/Save text module - Copy (2).vi"/>
 			<Item Name="Save text module - Copy.vi" Type="VI" URL="../General/Save text module - Copy.vi"/>
 			<Item Name="Save text module.vi" Type="VI" URL="../General/Save text module.vi"/>
@@ -511,7 +502,6 @@
 			<Item Name="SpectralRadar.dll" Type="Document" URL="../../../../../Program Files/Thorlabs/SpectralRadar/DLL/SpectralRadar.dll"/>
 			<Item Name="start Measurement.vi" Type="VI" URL="../Hardware Mfg/Thorlabs OCT/LabVIEW/user.lib/SpectralRadar.llb/start Measurement.vi"/>
 			<Item Name="stop Measurement.vi" Type="VI" URL="../Hardware Mfg/Thorlabs OCT/LabVIEW/user.lib/SpectralRadar.llb/stop Measurement.vi"/>
-			<Item Name="Test Single Queue Trim.vi" Type="VI" URL="../../../../SerialSectOCT-Jiarui/SerialSectOCT/Software/Test Code/Test Single Queue Trim.vi"/>
 			<Item Name="Thorlabs.MotionControl.Controls.dll" Type="Document" URL="../Thorlabs.MotionControl.Controls.dll"/>
 			<Item Name="Thorlabs.MotionControl.GenericMotorCLI.dll" Type="Document" URL="../Thorlabs.MotionControl.GenericMotorCLI.dll"/>
 			<Item Name="Thorlabs.MotionControl.IntegratedStepperMotorsCLI.dll" Type="Document" URL="../Thorlabs.MotionControl.IntegratedStepperMotorsCLI.dll"/>
@@ -530,6 +520,7 @@
 				<Property Name="NI.PreserveRelativePath" Type="Bool">true</Property>
 			</Item>
 			<Item Name="TLPM_64.dll" Type="Document" URL="../../../../Power meter/Driver/TLPM_64.dll"/>
+			<Item Name="Trimmed data queue.vi" Type="VI" URL="../General/Trimmed data queue.vi"/>
 		</Item>
 		<Item Name="Build Specifications" Type="Build"/>
 	</Item>
