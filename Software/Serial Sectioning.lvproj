@@ -475,9 +475,6 @@
 			<Item Name="Processing Parameter Int Selection.ctl" Type="VI" URL="../Hardware Mfg/Thorlabs OCT/LabVIEW/user.lib/SpectralRadar.llb/Processing Parameter Int Selection.ctl"/>
 			<Item Name="Raw Data Export Format Selection.ctl" Type="VI" URL="../Hardware Mfg/Thorlabs OCT/LabVIEW/user.lib/SpectralRadar.llb/Raw Data Export Format Selection.ctl"/>
 			<Item Name="save module.vi" Type="VI" URL="../General/save module.vi"/>
-			<Item Name="Save text module - Copy (2).vi" Type="VI" URL="../General/Save text module - Copy (2).vi"/>
-			<Item Name="Save text module - Copy.vi" Type="VI" URL="../General/Save text module - Copy.vi"/>
-			<Item Name="Save text module.vi" Type="VI" URL="../General/Save text module.vi"/>
 			<Item Name="SaveText.vi" Type="VI" URL="../../../../Power meter/Driver/SaveText.vi"/>
 			<Item Name="set Apodized Spectrum Output.vi" Type="VI" URL="../Hardware Mfg/Thorlabs OCT/LabVIEW/user.lib/SpectralRadar.llb/set Apodized Spectrum Output.vi"/>
 			<Item Name="set Calibration.vi" Type="VI" URL="../Hardware Mfg/Thorlabs OCT/LabVIEW/user.lib/SpectralRadar.llb/set Calibration.vi"/>
