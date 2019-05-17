@@ -435,7 +435,6 @@
 			<Item Name="Data Analyzation Selection.ctl" Type="VI" URL="../Hardware Mfg/Thorlabs OCT/LabVIEW/user.lib/SpectralRadar.llb/Data Analyzation Selection.ctl"/>
 			<Item Name="Data Queue manager.vi" Type="VI" URL="../General/Data Queue manager.vi"/>
 			<Item Name="Data queue status.vi" Type="VI" URL="../General/Data queue status.vi"/>
-			<Item Name="Data trimming.vi" Type="VI" URL="../General/Data trimming.vi"/>
 			<Item Name="Device Camera Preset Selection.ctl" Type="VI" URL="../Hardware Mfg/Thorlabs OCT/LabVIEW/user.lib/SpectralRadar.llb/Device Camera Preset Selection.ctl"/>
 			<Item Name="display Data 1D.vi" Type="VI" URL="../Hardware Mfg/Thorlabs OCT/LabVIEW/user.lib/SpectralRadar.llb/display Data 1D.vi"/>
 			<Item Name="display Data 2D.vi" Type="VI" URL="../Hardware Mfg/Thorlabs OCT/LabVIEW/user.lib/SpectralRadar.llb/display Data 2D.vi"/>
